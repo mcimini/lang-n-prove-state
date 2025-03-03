@@ -1,0 +1,75 @@
+Theorem Type-preservation : 
+forall*,
+    (Main : typeOf (nilEnvT) state_env(states) e typ) ->
+	IMPLY(s in states) : (TypeOf_(can(s)) : =TypeOf_(can(s))= state_env(s) s) endIMPLY -> 
+    (Step : step e states e' prime(states)) ->
+	exists*, 
+	AND(s in weakstates) : (_ :  =Subset_(state_env(s))= state_env(s) prime(state_env(s))) endAND
+	/\ 
+    (_ :  typeOf (nilEnvT) prime(state_env(states)) e' typ) /\
+	AND(s in states): (_ : =TypeOf_(s)= prime(state_env(s)) prime(s)) endAND. 
+Proof. 
+Typing_(0) : induction on Main.  
+
+for each e in Expression: 
+	Begins_(e) : apply Step to.
+	Prem_(0) : case Step. 
+	for each r in e.rules[step] : 
+
+				for each i in range(arity(e)) :  if constructed(getArgs(r.conclusion[none].sourceExp[none], i)) then _ : case Typing_(i) else TypingInserted_(getArgs(r.conclusion[none].sourceExp[none], i)) : apply Typing_(i) to  endfor.
+	
+	    		for each p in r.premises[lookup] : 
+					TypingInserted_(p.output[none]) : apply Find-type-in-env_(p.mapName[none]) to Prem_(p) TypeOf_(p.mapName[none]) TypingInserted_(p.label[none]) with env=p.mapName[none].otherEnvs[none]..
+					if constructed(p.output[none]) then _ : case  TypingInserted_(p.output[none]) else noOp				
+				endfor.
+
+	    		for each p in r.premises[user-defined] : TypingInserted_(p.output[none]) : apply Find-type-user-defined-_(p.predname[none]) to Prem_(p) TypingInserted_(p.args[none]) endfor.
+
+				for each p in r.premises[subtype] : 
+					assert (TypingInserted_(p.newAddedLabel[none]) : typeOf (nilEnvT) p.envs[none] p.newAddedLabel[none] p.type[none]). 
+					for each env in p.envs[none] : if env.nominalState[none] in weakstates then assert (Subset_(env.nominal[none]) : =Subset_(env.nominal[none])= env.nominal[none] env) else noOp endfor. 
+					for each var in p.varsAffected[none] : 
+						Tmp : apply Type-state-envs-weakening to TypingInserted_(var) Subset_(p.envsNominal[none]). 
+						clear TypingInserted_(var). 
+						TypingInserted_(var) : apply Tmp to. 
+						clear Tmp 
+					endfor.
+					for each env in p.envs[none] : if env.nominalState[none] in weakstates then clear Subset_(env.nominal[none]) else noOp endfor 
+				endfor. 
+
+				for each p in r.premises[statemod] : 
+					if (p.op[none] = 0)
+						then TypeOf_(p.outputMap[none]) : apply TypeOf-update_(p.mapName[none]) to TypeOf_(p.inputMap[none]) TypingInserted_(p.mainInput[none]) TypingInserted_(p.inserted[none]) Prem_(p)
+						else 
+							if (p.op[none] = 1) then TypeOf_(p.outputMap[none]) : apply TypeOf-update_(p.mapName[none]) to TypeOf_(p.inputMap[none]) TypingInserted_(p.mainInput[none]) Typing_(p.envPremise[none]) Prem_(p)						
+							else TypeOfForPrem_(p) : apply TypeOf-weakening_(p.mapName[none]) to TypeOf_(p.inputMap[none]) TypingInserted_(p.mainInput[none]) with l=p.newLabel[none]..
+								 TypeOf_(p.outputMap[none]) : apply TypeOf-add_(p.mapName[none]) to Prem_(p) TypeOfForPrem_(p).
+								 _ : case Prem_(p)
+							endif
+					endif
+				endfor.
+					
+	    		for each p in e.rule[typeOf].premises[retrieve] : 
+					if findVarTest(getArgs(r.conclusion[none].sourceExp[none], whichArgIdx(e.rule[typeOf].conclusion[none].exp[none], p.varAffected[none])), r.premises[all])
+					then _ : apply Set-retrieve-equal-_(p.mapName[none]) to Typing_(p) _ else noOp
+				endfor.
+				
+				for each s in states : witness mapNewEntry(r,can(state_env(s))) endfor.
+				split. 
+				
+				for each s in weakstates : search endfor. 
+
+				if containsSubstitution(r.conclusion[none].targetExp[none]) then skip else backchain on Type-state-envs-weakening endif. 
+				
+				for each s in states : search endfor 				
+	endfor.  
+	for each i in contextualArgs(e): 
+		MapEnvSubset0 : apply IH0 to Typing_(i) TypeOf_(can(states)) Prem_(0).
+		for each s in states : witness prime(state_env(s)) endfor.
+		split. 
+		for each s in states : search endfor. 
+		for each j in range(arity(e)) : if (i = j) then noOp else _ : apply Type-state-envs-weakening to Typing_(j) MapEnvSubset_(range(states)) endfor. search.  		
+		for each s in states : search endfor
+	endfor 
+endfor
+
