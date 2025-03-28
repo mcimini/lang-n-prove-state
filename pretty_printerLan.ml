@@ -59,3 +59,21 @@ let language_prettyPrintExpressions_in_TypingRules_order lan =
 	let grammarItems = List.map (language_prettyPrintTerm_map_version false) expressions  in 
 		"Expression E ::= x | " ^ (String.concat " | " grammarItems) ^ "\n"
 
+let language_prettyPrintMapFunctions_helper meta_var =
+	"lookupEnv" ^ meta_var ^" (consEnv" ^ meta_var ^" L T Env" ^ meta_var ^") L T.
+	lookupEnv" ^ meta_var ^" (consEnv" ^ meta_var ^" L1 T1 Env" ^ meta_var ^") L T :- lookupEnv" ^ meta_var ^" Env" ^ meta_var ^" L T.
+	
+	subsetEnv" ^ meta_var ^" Env" ^ meta_var ^" Env" ^ meta_var ^".
+	subsetEnv" ^ meta_var ^" Env" ^ meta_var ^" (consEnv" ^ meta_var ^" L T Rest) :- subsetEnv" ^ meta_var ^" Env" ^ meta_var ^" Rest.
+	
+	lookupMap" ^ meta_var ^" (consMap" ^ meta_var ^" L E MU) L E.
+	lookupMap" ^ meta_var ^" (consMap" ^ meta_var ^" L1 E1 MU) L E :- lookupMap" ^ meta_var ^" MU L E.
+	
+	updateMap" ^ meta_var ^" (consMap" ^ meta_var ^" L E MU) L E' (consMap" ^ meta_var ^" L E' MU).
+	updateMap" ^ meta_var ^" (consMap" ^ meta_var ^" L1 E1 MU) L E' (consMap" ^ meta_var ^" L1 E1 MU') :- updateMap" ^ meta_var ^" MU L E' MU'.
+	
+	addMap" ^ meta_var ^" (consMap" ^ meta_var ^" L E1 MU) E2 (consMap" ^ meta_var ^" (succLabel" ^ meta_var ^" L) E2 (consMap" ^ meta_var ^" L E1 MU)) (succLabel" ^ meta_var ^" L). "
+
+let language_prettyPrintMapFunctions lan = 
+	let meta_vars = language_get_metavariables_map lan in
+	String.concat "\n\n" (List.map language_prettyPrintMapFunctions_helper meta_vars)
