@@ -1,7 +1,8 @@
 open Batteries
-open Option
+open Option (* "Maybe" Some or None*)
 open List
 
+(*Data structures*)
 type term = 
 	| Constr of string * (term list)
 	| LangVar of string
@@ -19,9 +20,10 @@ type rule = Rule of (formula list) * formula
 
 type language = Language of (grammarLine list) * (rule list) 
 
-let grammarLine_getCategory (GrammarLine(cname, _, _)) = cname
-let grammarLine_getMetavarOption (GrammarLine(_, metavarOption, _)) = metavarOption
-let grammarLine_getItemsOption (GrammarLine(_, _, itemsOption)) = itemsOption
+(* Getter *)
+let grammarLine_getCategory (GrammarLine(cname, _, _)) = cname	(* Getter name *)
+let grammarLine_getMetavarOption (GrammarLine(_, metavarOption, _)) = metavarOption (* Getter metavariable probably variable H*)
+let grammarLine_getItemsOption (GrammarLine(_, _, itemsOption)) = itemsOption 
 
 let term_getCNAME (Constr(cname,_)) = cname 
 let term_getArguments (Constr(_,ts)) = ts 
@@ -236,3 +238,28 @@ let var_and_names_equality s1 s2 : bool = (String.trim s1) = (String.trim s2)
 
 let replace_charater_in_string (c1 : string) (c2 : string) s = let (c1,c2) = (c1.[0], c2.[0]) in  String.map (fun c -> if c = c1 then c2 else c) s
 let rplc c1 c2 s = replace_charater_in_string c1 c2 s
+
+let rec language_get_metavariables_map_helper g_l acc var_list =
+	match g_l with
+	| [] -> acc
+	| grammar_line :: rest ->
+		let g_l_items = (grammarLine_getItemsOption grammar_line) in
+		match g_l_items with
+		| Some items ->
+			let _ = List.map
+						(fun item ->
+						match item with
+						| Constr ("LNP_Map", _) ->
+							let mta_var = grammarLine_getMetavarOption grammar_line in
+							var_list := get mta_var :: !var_list;
+						| _ -> ()
+						) items
+			in
+				language_get_metavariables_map_helper rest acc var_list
+		| None -> language_get_metavariables_map_helper rest acc var_list
+	
+let language_get_metavariables_map (lan : language) : string list =
+	let var_list = ref [] in
+	let grammar_lines = language_getGrammar lan in
+	language_get_metavariables_map_helper grammar_lines [] var_list;
+	!var_list

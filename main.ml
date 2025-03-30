@@ -59,6 +59,10 @@ let typeSoundnessState = [
 ;
 "./progress-state.lnp" 
 ;
+"./uniqueness-of-lookupMap.lnp"
+;
+"./find-type-in-env.lnp"
+;
 "preservation-state.lnp" 
 ]
 
@@ -127,7 +131,7 @@ let applySchemaToAllLanguages filenameSchema =
 
 let applyAllSchemasToOneLanguages_to_file filenameLan = 	
 	let schemas = List.map parseTheSchema repoOfSchemas in 
-	let lan = parseOneLanguage filenameLan in 
+	let lan = parseOneLanguage filenameLan in
 	let result = List.concat (List.map (compile lan) schemas) in (* concat, so result is a list of theorem&proof *)
 	let nameOfLanguage = Filename.chop_extension filenameLan in 
 	(* generate Abella proof .thm *)
@@ -137,12 +141,16 @@ let applyAllSchemasToOneLanguages_to_file filenameLan =
 	generate_definitions thm_file lan;
 	List.map (output_string thm_file) (List.map abella_thrAndProof result); 
     close_out thm_file;
-	(* generate language definition .mod 
+
+	(* generate language definition .mod  *)
 	let mod_file = open_out ("./generated/" ^ nameOfLanguage ^ ".mod") in
 	output_string mod_file ("module " ^ nameOfLanguage ^ ".\n\n"); 
+	
+	output_string mod_file (language_prettyPrintMapFunctions  lan); 
+
 	output_string mod_file (language_prettyPrintRules lan); 
     close_out mod_file;
-		*)
+		
     print_endline ("Proofs generated in ./generated/" ^ nameOfLanguage ^ ".thm");;
 	
 let () = List.hd (List.map applyAllSchemasToOneLanguages_to_file languagesFromRepo);;
