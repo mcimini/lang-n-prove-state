@@ -63,7 +63,15 @@ let typeSoundnessState = [
 ;
 "./find-type-in-env.lnp"
 ;
-"preservation-state.lnp" 
+"./typeOf-update.lnp"
+;
+"./typeOf-weakening.lnp"
+;
+"./typeOf-add.lnp"
+;
+"./type-state-envs-weakening.lnp"
+;
+(* "preservation-state.lnp"  *)
 ]
 
 let repoOfSchemas = typeSoundnessState
