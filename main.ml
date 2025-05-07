@@ -61,6 +61,8 @@ let typeSoundnessState = [
 ;
 "./uniqueness-of-lookupMap.lnp"
 ;
+"./excluded-middle-labelsH.lnp"
+;
 "./find-type-in-env.lnp"
 ;
 "./typeOf-update.lnp"

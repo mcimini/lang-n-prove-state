@@ -5,4 +5,6 @@ for each s in states,
         (_ : =TypeOf_(s)= (consEnv l t env) (consMap l e map)) ->
         (_ : =TypeOf_(s)= (consEnv l t env) map'). 
 Proof.
-skip
+_ : induction on Main.
+Subset: case Main.
+search
