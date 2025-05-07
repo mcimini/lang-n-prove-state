@@ -1,0 +1,21 @@
+for each s in states,
+    Theorem Type-state-envs-weakening: 
+        forall*,
+        (Main : typeOf gamma env e t) ->
+        (Subset : =SubsetEnv_(s)= env env') ->
+        (_ : typeOf gamma env' e t).
+Proof.
+_ : induction on Main.
+intros.
+Subset1: case Subset.
+search.
+Subset2: apply Assert to.
+Typing0: case Main.
+_ : apply IH to Typing0 Subset2.
+search.
+_ : apply IH to Typing0 Subset2.
+_ :apply IH to Typing1 Subset2.
+search.
+search.
+
+skip
