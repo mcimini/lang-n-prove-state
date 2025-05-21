@@ -1,4 +1,4 @@
-open Batteries
+	open Batteries
 open List
 open Option
 open Lnp
@@ -32,6 +32,7 @@ let wrapWithBrackets str =  "{" ^ str ^ "}"
 let rec abella_formula formula = match formula with 
 	| Top -> "true"
 	| Bottom -> "false"
+	| True -> "true"
 	(* Formula are not given a name in the theorem, formulae also come from .mod so they are around brackets { and }  *)
 	| Formula(lnp_name, predname, ts) -> let ts = if predname = "typeOf" && no_environment then List.tl ts else ts in 
 										 let plainFormula = abella_plainFormula (Formula(lnp_name, predname, ts)) in 

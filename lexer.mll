@@ -33,7 +33,6 @@ rule token = parse
   | "."               { DOT }
   | "forallVars"               { FORALLVARS }
   | "->"            { IMPLY }
-  | "OR"               { ORMACRO }
   | "existsVars"               { EXISTSVARS }
   | "="             { EQUAL }
   | "/\\"            { AND }
@@ -71,6 +70,7 @@ rule token = parse
   | "isErrorHandler"           { ISERRORHANDLER }
   | "getArgType"           { GETARGTYPE }
   | "\\/"            { OR }
+  | "OR"               { ORMACRO }
   | "exists"               { EXISTS }
   | "isVar"               { ISVAR }
   | "is"               { IS }
@@ -82,6 +82,7 @@ rule token = parse
   | "endIMPLY"               { ENDIMPLY }
   | "endif"               { ENDIF }
   | "skip"               { SKIP }
+  | "true"               { TRUE }
   (* reimplemented some for subtyping *)
   | "forall*"               { FORALLSTAR }
   | "exists*"               { EXISTSSTAR }

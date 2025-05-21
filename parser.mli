@@ -11,6 +11,7 @@ type token =
   | VALUESOF
   | VALUEARGS
   | UNDERSCORE
+  | TRUE
   | TO
   | THEOREM
   | THEN

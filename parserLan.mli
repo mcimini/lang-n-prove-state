@@ -22,6 +22,7 @@ type token =
   | RETRIEVE
   | PROVIDED
   | PLUS
+  | OR
   | NOSTEP
   | MID
   | MAPSTO

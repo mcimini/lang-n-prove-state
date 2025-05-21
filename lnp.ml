@@ -55,6 +55,7 @@ and evaluatedExpression =
 and formula =
   | Top
   | Bottom
+  | True
   | Formula of lnp_name * predname * evaluatedExpression list
   | Forall of var * formula
   | Exists of var * formula

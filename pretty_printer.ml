@@ -27,6 +27,7 @@ let print_lnp_name lnp_name = match lnp_name with
 let rec print_formula formula = match formula with 
 	| Top -> "Top"
 	| Bottom -> "Bottom"
+	| True -> "true"
 	| Formula(lnp_name, predname, ts) -> "(" ^ print_lnp_name lnp_name ^ ": " ^ predname ^ " " ^ (String.concat " " (List.map print_evalExp ts)) ^ ")"
 	| Forall(var, formula) -> "forall " ^ var ^ ", " ^ print_formula formula
 	| Exists(var, formula) -> "exists " ^ var ^ ", " ^ print_formula formula
@@ -48,6 +49,7 @@ let rec print_proof proof = match proof with
 	| Search -> "search"
 	| NoOp -> "noOp"
 	| Skip -> "skip"
+	| Split -> "split"
 	| Case(lnp_name1, lnp_name2) -> print_lnp_name lnp_name1 ^ ": " ^ "case " ^ print_lnp_name lnp_name2
 	| CaseStar(lnp_name1, lnp_name2, proof) -> print_lnp_name lnp_name1 ^ ": " ^ "case* " ^ print_lnp_name lnp_name2 ^ " in " ^ print_proof proof
 	| Induction(lnp_name1, lnp_name2) -> print_lnp_name lnp_name1 ^ ": " ^ "induction on " ^ print_lnp_name lnp_name2

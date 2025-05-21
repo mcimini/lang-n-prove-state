@@ -236,6 +236,7 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 	
 let rec compile_formula lan formula = match formula with 
 	| Top -> Top
+	| True -> True
 	| Bottom -> Bottom
 	| Formula(lnp_name, predname, ts) -> let compiledArgs = List.concat (List.map eval_createListFromTermAndListOfTerm (List.map (eval lan) ts)) in 
 		(* if compile_lnp_name lan lnp_name = String "Main" then raise(Failure(dump compiledArgs)) else *)

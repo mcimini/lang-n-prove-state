@@ -59,6 +59,7 @@ let substitution_lnp_name_map_version var term lnp_name = substitution_lnp_name 
 
 let rec substitution_formula formula var term = match formula with 
 	| Bottom -> Bottom
+	| True -> True
 	| Formula(lnp_name, predname, ts) -> Formula(substitution_lnp_name lnp_name var term, predname, List.map (substitution_evaluatedExpression_mapversion var term) ts)
 	| Forall(var2, formula) -> Forall(var2, substitution_formula formula var term)
 	| Exists(var2, formula) -> Exists(var2, substitution_formula formula var term)

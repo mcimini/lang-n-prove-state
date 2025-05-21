@@ -12,6 +12,7 @@
 %token COLON
 %token TURNSTYLE
 %token AND
+%token OR
 %token LEFTPAR  
 %token RIGHTPAR 
 %token EMPTYCTX 

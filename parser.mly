@@ -23,6 +23,7 @@
 %token EXISTSVARS
 %token EQUAL
 %token AND
+%token TRUE
 %token ANDMACRO
 %token VALUESOF
 %token VALUEARGS
