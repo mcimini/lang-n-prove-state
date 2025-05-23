@@ -35,6 +35,7 @@ rule token = parse
   | "<==" { PROVIDED }
   | "," { COMMA }
   | "/\\"            { AND }
+  | "\\/"            { OR }
   | "." { DOT }
   | "[" { LEFTSQUARE }
   | "]" { RIGHTSQUARE }

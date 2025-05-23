@@ -260,6 +260,8 @@ formula:
         { Imply(f1, f2) }
     | f1 = formula AND f2 = formula
         { And(f1, f2) }
+    | f1 = formula OR f2 = formula
+        { Or(f1, f2) }
 
 proof:
   | INTROS 
