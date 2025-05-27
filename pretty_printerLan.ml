@@ -3,7 +3,7 @@ open List
 open Option
 open Language
 open DeclarationsToRules
-
+let no_environment = false
 let generateModPreamble tsName = "module " ^ tsName ^ ".\n\n"
 
 let rec language_prettyPrintTerm t hypotheticalFlag = match t with 
@@ -18,7 +18,7 @@ and language_prettyPrintTerm_map_version hypotheticalFlag t = language_prettyPri
 
 let language_prettyPrintHypotheticalWrap predname arguments = 
 	let typeEnv = List.nth arguments 0 in 
-	let argsWithoutTypeEnv = List.tl arguments in 
+	let argsWithoutTypeEnv = if no_environment then List.tl arguments else arguments in 
 	if term_isConstr typeEnv 
 		then let plainFormula = predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version true) argsWithoutTypeEnv)) in 
 				match typeEnv with 
