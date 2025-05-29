@@ -1,0 +1,11 @@
+for each s in states,
+    Theorem Lookup-store-weakening:
+        forall*,
+        (_ : subsetEnvH env env') ->
+        (_ : lookupEnvH env l t) ->
+        (_ : lookupEnvH env' l t).
+Proof.
+_ : induction on H1.
+    search.
+_ : apply IH0 to H3 H2.
+    search
