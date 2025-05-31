@@ -3,7 +3,7 @@ for each s in states,
         forall*,
         (Lookup  : =LookupMap_(s)= map l e) ->
         (TypeOfH : =TypeOf_(s)= env map) ->
-        (TypeOf : typeOf (nilEnvT) env label ref) ->
+        (TypeOf : typeOf (nilEnvT) env (label l) (ref t)) ->
         (_ : typeOf (nilEnvT) env e t).
 Proof.
     intros.

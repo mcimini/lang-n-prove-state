@@ -1,0 +1,12 @@
+for each s in states,
+
+    Theorem Update-implies-lookup_(s) :
+    forall*,
+    (UpdateMap : =UpdateMap_(s)= map l e map') ->
+    (LookupMap : =LookupMap_(s)= map' l e).
+Proof.
+    _ : induction on H1.
+    StUpdate : case  UpdateMap.
+    search.
+    _ : apply IH0 to StUpdate.
+    search
