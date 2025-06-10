@@ -53,25 +53,35 @@ let typeSoundnessFunctional = 	[
 	]
 
 let typeSoundnessState = [
-"canonical-state.lnp"
+(*"canonical-state.lnp"
 ;
 "./progress-op-state.lnp"
 ;
-"./progress-state.lnp" 
-;
+"./progress-state.lnp"
+;*)
 "./uniqueness-of-lookupMap.lnp"
 ;
-"./excluded-middle-labelsH.lnp"
+"./uniqueness-of-lookupEnv.lnp"
+;
+"./lookup-store-weakening.lnp"
 ;
 "./find-type-in-env.lnp"
 ;
+"./update-implies-lookup.lnp"
+;
+"./inequality-contradiction.lnp"
+;
+"./excluded-middle-labels.lnp"
+;
+"./lookup-when-inequal-labels.lnp"
+;
 "./typeOf-update.lnp"
+;
+"./type-state-envs-weakening.lnp"
 ;
 "./typeOf-weakening.lnp"
 ;
 "./typeOf-add.lnp"
-;
-"./type-state-envs-weakening.lnp"
 ;
 (* "preservation-state.lnp"  *)
 ]
@@ -146,8 +156,7 @@ let applyAllSchemasToOneLanguages_to_file filenameLan =
 	let nameOfLanguage = Filename.chop_extension filenameLan in 
 	(* generate Abella proof .thm *)
 	let thm_file = open_out ("./generated/" ^ nameOfLanguage ^ ".thm") in
-(*	temporarily removed for debug.
-	output_string thm_file ("Specification \"" ^ nameOfLanguage ^ "\". \n\n");  *)
+	output_string thm_file ("Specification \"" ^ nameOfLanguage ^ "\". \n\n");
 	generate_definitions thm_file lan;
 	List.map (output_string thm_file) (List.map abella_thrAndProof result); 
     close_out thm_file;
