@@ -1,0 +1,10 @@
+for each s in states,
+    Theorem Inequality-contradiction:
+    forall*,
+    (l1 = l2)-> 
+    (_ : false) ->
+    (_ : false).
+Proof.
+intros.
+assert (Equal : eq l l).
+_ : apply Contra to Equal
