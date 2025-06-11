@@ -1,0 +1,8 @@
+for each s in states,
+    Theorem Uniqueness-of-lookupEnv_(s) :
+    forall*,
+    (_ : =LookupEnv_(s)= env l e1) ->
+    (_ : =LookupEnv_(s)= env l e2) ->
+    (e1 = e2).
+Proof.
+skip
