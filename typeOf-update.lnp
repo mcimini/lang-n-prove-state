@@ -5,7 +5,7 @@ for each s in states,
     (TypeOfE : typeOf nilEnvT env e t) ->
     (TypeOfLabel : typeOf nilEnvT env label ref) ->
     (Update : =UpdateMap_(s)= map l e map') ->
-    (LookupEnv : =TypeOf_(s)= env map).
+    (LookupEnv : =TypeOf_(s)= env map').
 Proof.
 intros. 
 TypeOfMapExpanded: case TypeOfMap.
@@ -18,5 +18,5 @@ _ : apply Uniqueness-of-lookupEnv_(s) to LookupEnv LookupEnvFromTypeOf.
 _ : apply Update-implies-lookup_(s) to Update.
 search.
 LookupMap : apply TypeOfMapExpanded to LookupEnv.
-_ : apply Lookup-when-inequal-labels_(s) to Landl Update LookupMap.
+_ : apply Lookup-When-Inequal-labels_(s) to Landl Update LookupMap.
 search
