@@ -1,0 +1,404 @@
+Specification "stlc_ref_comp".
+
+%Close typ. Close label. Close term.
+
+Define progresses : term -> mapH -> mapM -> prop by
+     progresses E H M := {value E} ;
+     progresses E H M := exists E' H' M', {step E H M E' H' M'}.
+
+%% Map H
+
+Define typeOfH: envH -> mapH -> prop by
+    typeOfH EnvH MapH := forall l, forall t,
+        {lookupEnvH EnvH l t} ->
+        exists e, {lookupMapH MapH l e} /\ {typeOf (nilEnvT) EnvH (nilEnvM) e t}.
+
+Theorem  Find-type-in-envH  : forall envH mapH envEnvM L e T, {lookupMapH mapH L e} -> typeOfH envH mapH -> {typeOf (nilEnvT) envH envEnvM (labelH L) (refH T)} -> {typeOf (nilEnvT) envH envEnvM e T}. 
+skip. 
+
+Theorem TypeOf-updateH: 
+    %assert 
+	forall envH mapH mapH' envM e T L,
+    typeOfH envH mapH ->
+    {typeOf nilEnvT envH envM (labelH L) (refH T)} ->
+	{typeOf nilEnvT envH envM e T} ->
+    {updateMapH mapH L e mapH'} ->
+    typeOfH envH mapH'.
+skip. 
+
+Theorem TypeOf-weakeningH: 
+	forall envH mapH envM E T l,
+    typeOfH envH mapH ->
+    {typeOf nilEnvT envH envM E T} ->
+    typeOfH (consEnvH l T envH) (consMapH l E mapH).
+skip. 
+
+Theorem TypeOf-addH : forall mapH E mapH' L T envH,  
+{addMapH mapH E mapH' L} -> typeOfH (consEnvH L T envH) (consMapH L E mapH) -> typeOfH (consEnvH L T envH) mapH'. 
+skip. 
+
+
+%% Map M
+
+Define typeOfM: envM -> mapM -> prop by
+    typeOfM EnvM MapM := forall l, forall t,
+        {lookupEnvM EnvM l t} ->
+        exists e, {lookupMapM MapM l e} /\ {typeOf (nilEnvT) (nilEnvH) EnvM e t}.
+
+Theorem  Find-type-in-envM  : forall envM mapM envEnvH L e T, {lookupMapM mapM L e} -> typeOfM envM mapM -> {typeOf (nilEnvT) envEnvH envM (labelM L) (refM T)} -> {typeOf (nilEnvT) envEnvH envM e T}. 
+skip. 
+
+Theorem TypeOf-updateM: 
+    %assert 
+	forall envM mapM mapM' envH e T L,
+    typeOfM envM mapM ->
+    {typeOf nilEnvT envH envM (labelM L) (refM T)} ->
+	{typeOf nilEnvT envH envM e T} ->
+    {updateMapM mapM L e mapM'} ->
+    typeOfM envM mapM'.
+skip. 
+
+Theorem TypeOf-weakeningM: 
+	forall envM mapM envH E T l,
+    typeOfM envM mapM ->
+    {typeOf nilEnvT envH envM E T} ->
+    typeOfM (consEnvM l T envM) (consMapM l E mapM).
+skip. 
+
+Theorem TypeOf-addM : forall mapM E mapM' L T envM,  
+{addMapM mapM E mapM' L} -> typeOfM (consEnvM L T envM) (consMapM L E mapM) -> typeOfM (consEnvM L T envM) mapM'. 
+skip. 
+
+
+%% for all maps
+
+Theorem Type-state-envs-weakening: 
+	%assert 
+	forall gamma envH envM e t envH' envM',
+    {typeOf gamma envH envM e t} ->
+    {subsetEnvH envH envH'} ->
+    {subsetEnvM envM envM'} ->
+    {typeOf gamma envH' envM' e t}.
+skip. 
+
+
+
+Theorem Canonical-form-arrow: forall EnvH, forall EnvM, forall e, forall T1, forall T2, {typeOf (nilEnvT) EnvH EnvM e (arrow T1 T2)} -> {value e} -> exists T, exists R, e = (abs T R). 
+intros Main ValHyp.  
+ case Main(keep).  
+ search.  
+ Mapp: case ValHyp(keep).  
+  
+ Mderef: case ValHyp(keep).  
+  
+  
+  
+  
+  
+ 
+
+
+Theorem Canonical-form-refH: forall EnvH, forall EnvM, forall e, forall T1, {typeOf (nilEnvT) EnvH EnvM e (refH T1)} -> {value e} -> exists L, e = (labelH L). 
+intros Main ValHyp.  
+ case Main(keep).  
+  
+ Mapp: case ValHyp(keep).  
+ Mref: case ValHyp(keep).  
+ Mderef: case ValHyp(keep).  
+  
+ search.  
+  
+  
+  
+ 
+
+
+Theorem Canonical-form-refM: forall EnvH, forall EnvM, forall e, forall T1, {typeOf (nilEnvT) EnvH EnvM e (refM T1)} -> {value e} -> exists L, e = (labelM L). 
+intros Main ValHyp.  
+ case Main(keep).  
+  
+ Mapp: case ValHyp(keep).  
+  
+ Mderef: case ValHyp(keep).  
+  
+  
+ search.  
+  
+  
+ 
+
+
+Theorem Canonical-form-unitT: forall EnvH, forall EnvM, forall e, {typeOf (nilEnvT) EnvH EnvM e (unitT)} -> {value e} -> e = (unit). 
+intros Main ValHyp.  
+ case Main(keep).  
+  
+ Mapp: case ValHyp(keep).  
+  
+ Mderef: case ValHyp(keep).  
+ Massign: case ValHyp(keep).  
+  
+  
+ search.  
+  
+ 
+
+
+Theorem Canonical-form-times: forall EnvH, forall EnvM, forall e, forall T1, forall T2, {typeOf (nilEnvT) EnvH EnvM e (times T1 T2)} -> {value e} -> exists V1, exists V2, e = (pair V1 V2) /\ {value V1} /\ {value V2}. 
+intros Main ValHyp.  
+ case Main(keep).  
+  
+ Mapp: case ValHyp(keep).  
+  
+ Mderef: case ValHyp(keep).  
+  
+  
+  
+  
+ MrefAndStore: case ValHyp(keep).  
+ Mpair: case ValHyp(keep).  
+ search. 
+
+
+Theorem Progress-abs: forall EnvH, forall EnvM, forall T1, forall E2, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (abs T1 E2) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> true -> progresses (abs T1 E2) H M. 
+skip. 
+
+
+Theorem Progress-app: forall EnvH, forall EnvM, forall E1, forall E2, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (app E1 E2) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> progresses E1 H M -> progresses E2 H M -> progresses (app E1 E2) H M. 
+skip. 
+
+
+Theorem Progress-ref: forall EnvH, forall EnvM, forall E1, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (ref E1) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> progresses E1 H M -> progresses (ref E1) H M. 
+skip. 
+
+
+Theorem Progress-deref: forall EnvH, forall EnvM, forall E1, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (deref E1) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> progresses E1 H M -> progresses (deref E1) H M. 
+skip. 
+
+
+Theorem Progress-assign: forall EnvH, forall EnvM, forall E1, forall E2, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (assign E1 E2) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> progresses E1 H M -> progresses E2 H M -> progresses (assign E1 E2) H M. 
+skip. 
+
+
+Theorem Progress-L1: forall EnvH, forall EnvM, forall L1, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (labelH L1) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> true -> progresses (labelH L1) H M. 
+skip. 
+
+
+Theorem Progress-Lm1: forall EnvH, forall EnvM, forall Lm1, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (labelM Lm1) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> true -> progresses (labelM Lm1) H M. 
+skip. 
+
+
+Theorem Progress-unit: forall EnvH, forall EnvM, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (unit) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> true -> progresses (unit) H M. 
+skip. 
+
+
+Theorem Progress-refAndStore: forall EnvH, forall EnvM, forall E1, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (refAndStore E1) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> progresses E1 H M -> progresses (refAndStore E1) H M. 
+skip. 
+
+
+Theorem Progress-pair: forall EnvH, forall EnvM, forall E1, forall E2, forall ty, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM (pair E1 E2) ty} -> typeOfH EnvH H -> typeOfM EnvM M -> true -> progresses (pair E1 E2) H M. 
+skip. 
+
+
+Theorem Progress-thm: forall EnvH, forall EnvM, forall e, forall typ, forall H, forall M, {typeOf (nilEnvT) EnvH EnvM e typ} -> typeOfH EnvH H -> typeOfM EnvM M -> progresses e H M. 
+IH0 : induction on 1. intros Main TypeOfH TypeOfM. Typing0: case Main.  
+ backchain Progress-abs.  
+ apply IH0 to Typing0 TypeOfH TypeOfM.  
+ apply IH0 to Typing1 TypeOfH TypeOfM.  
+ backchain Progress-app.  
+ apply IH0 to Typing0 TypeOfH TypeOfM.  
+ backchain Progress-ref.  
+ apply IH0 to Typing0 TypeOfH TypeOfM.  
+ backchain Progress-deref.  
+ apply IH0 to Typing0 TypeOfH TypeOfM.  
+ apply IH0 to Typing1 TypeOfH TypeOfM.  
+ backchain Progress-assign.  
+ backchain Progress-L1.  
+ backchain Progress-Lm1.  
+ backchain Progress-unit.  
+ apply IH0 to Typing0 TypeOfH TypeOfM.  
+ backchain Progress-refAndStore.  
+ backchain Progress-pair. 
+
+
+Theorem Type-preservation: forall EnvH, forall EnvM, forall e, forall typ, forall H, forall M, forall e', forall H', forall M', {typeOf (nilEnvT) EnvH EnvM e typ} -> typeOfH EnvH H -> typeOfM EnvM M -> {step e H M e' H' M'} -> exists EnvH', exists EnvM', {subsetEnvH EnvH EnvH'} /\ {subsetEnvM EnvM EnvM'} /\ {typeOf (nilEnvT) EnvH' EnvM' e' typ} /\ typeOfH EnvH' H' /\ typeOfM EnvM' M'. 
+IH0 : induction on 1. intros Main TypeOfH TypeOfM Step. Typing0: case Main.  
+ Beginsabs: apply Step. 
+ Prem0: case Step(keep).  
+  
+ Beginsapp: apply Step. 
+ Prem0: case Step(keep).  
+ case Typing0(keep).  
+ TypingInsertedV: apply Typing1. 
+ witness EnvH.  
+ witness EnvM.  
+ split.  
+ search.  
+ search.  
+ skip.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+  
+ apply Type-state-envs-weakening to Typing1 MapEnvSubset0 MapEnvSubset1.  
+ search.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing1 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+ apply Type-state-envs-weakening to Typing0 MapEnvSubset0 MapEnvSubset1.  
+  
+ search.  
+ search.  
+ search.  
+ Beginsref: apply Step. 
+ Prem0: case Step(keep).  
+ TypingInsertedV: apply Typing0. 
+ TypingInsertedLNewH : assert {typeOf (nilEnvT) (consEnvH LNewH T EnvH) EnvM (labelH LNewH) (refH T)}.  
+ SubsetEnvH : assert {subsetEnvH EnvH (consEnvH LNewH T EnvH)}.  
+ SubsetEnvM : assert {subsetEnvM EnvM EnvM}.  
+ clear SubsetEnvH.  
+ clear SubsetEnvM.  
+ TypeOfForPrem0: apply TypeOf-weakeningH to TypeOfH TypingInsertedV with l = LNewH.  
+ TypeOfH': apply TypeOf-addH to Prem0 TypeOfForPrem0.  
+ case Prem0(keep).  
+ witness (consEnvH LNewH T EnvH).  
+ witness EnvM.  
+ split.  
+ search.  
+ search.  
+ backchain Type-state-envs-weakening.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+ search.  
+ search.  
+ search.  
+ Beginsderef: apply Step. 
+ Prem0: case Step(keep).  
+ TypingInsertedL: apply Typing0. 
+ TypingInsertedV: apply Find-type-in-envH to Prem0 TypeOfH TypingInsertedL with envEnvM = EnvM.  
+  
+ witness EnvH.  
+ witness EnvM.  
+ split.  
+ search.  
+ search.  
+ backchain Type-state-envs-weakening.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+ search.  
+ search.  
+ search.  
+ Beginsassign: apply Step. 
+ Prem0: case Step(keep).  
+ TypingInsertedL: apply Typing0. 
+ TypingInsertedV: apply Typing1. 
+ TypeOfH': apply TypeOf-updateH to TypeOfH TypingInsertedL TypingInsertedV Prem0.  
+ witness EnvH.  
+ witness EnvM.  
+ split.  
+ search.  
+ search.  
+ backchain Type-state-envs-weakening.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+  
+ apply Type-state-envs-weakening to Typing1 MapEnvSubset0 MapEnvSubset1.  
+ search.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing1 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+ apply Type-state-envs-weakening to Typing0 MapEnvSubset0 MapEnvSubset1.  
+  
+ search.  
+ search.  
+ search.  
+ BeginsL1: apply Step. 
+ Prem0: case Step(keep).  
+  
+ BeginsLm1: apply Step. 
+ Prem0: case Step(keep).  
+  
+ Beginsunit: apply Step. 
+ Prem0: case Step(keep).  
+  
+ BeginsrefAndStore: apply Step. 
+ Prem0: case Step(keep).  
+ TypingInsertedV: apply Typing0. 
+ TypingInsertedLNewH : assert {typeOf (nilEnvT) (consEnvH LNewH T EnvH) EnvM (labelH LNewH) (refH T)}.  
+ SubsetEnvH : assert {subsetEnvH EnvH (consEnvH LNewH T EnvH)}.  
+ SubsetEnvM : assert {subsetEnvM EnvM EnvM}.  
+ clear SubsetEnvH.  
+ clear SubsetEnvM.  
+ TypingInsertedLNewM : assert {typeOf (nilEnvT) (consEnvH LNewH T EnvH) (consEnvM LNewM (refH T) EnvM) (labelM LNewM) (refM (refH T))}.  
+ SubsetEnvH : assert {subsetEnvH EnvH (consEnvH LNewH T EnvH)}.  
+ SubsetEnvM : assert {subsetEnvM EnvM (consEnvM LNewM (refH T) EnvM)}.  
+ clear SubsetEnvH.  
+ clear SubsetEnvM.  
+ TypingInsertedLNewH2 : assert {typeOf (nilEnvT) (consEnvH LNewH2 (refM (refH T)) (consEnvH LNewH T EnvH)) (consEnvM LNewM (refH T) EnvM) (labelH LNewH2) (refH (refM (refH T)))}.  
+ SubsetEnvH : assert {subsetEnvH EnvH (consEnvH LNewH2 (refM (refH T)) (consEnvH LNewH T EnvH))}.  
+ SubsetEnvM : assert {subsetEnvM EnvM (consEnvM LNewM (refH T) EnvM)}.  
+ clear SubsetEnvH.  
+ clear SubsetEnvM.  
+ TypeOfForPrem0: apply TypeOf-weakeningH to TypeOfH TypingInsertedV with l = LNewH.  
+ TypeOfH': apply TypeOf-addH to Prem0 TypeOfForPrem0.  
+ case Prem0(keep).  
+ TypeOfForPrem1: apply TypeOf-weakeningM to TypeOfM TypingInsertedLNewH with l = LNewM.  
+ TypeOfM': apply TypeOf-addM to Prem1 TypeOfForPrem1.  
+ case Prem1(keep).  
+ TypeOfForPrem2: apply TypeOf-weakeningH to TypeOfH' TypingInsertedLNewM with l = LNewH2.  
+ TypeOfH'': apply TypeOf-addH to Prem2 TypeOfForPrem2.  
+ case Prem2(keep).  
+ witness (consEnvH LNewH2 (refM (refH T)) (consEnvH LNewH T EnvH)).  
+ witness (consEnvM LNewM (refH T) EnvM).  
+ split.  
+ search.  
+ search.  
+ backchain Type-state-envs-weakening.  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH TypeOfM Prem0.  
+ witness EnvH'.  
+ witness EnvM'.  
+ split.  
+ search.  
+ search.  
+ search.  
+ search.  
+ search.  
+ Beginspair: apply Step. 
+ Prem0: case Step(keep).  
+ 
+
+
