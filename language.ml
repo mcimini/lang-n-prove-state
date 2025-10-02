@@ -25,7 +25,19 @@ let grammarLine_getCategory (GrammarLine(cname, _, _)) = cname	(* Getter name *)
 let grammarLine_getMetavarOption (GrammarLine(_, metavarOption, _)) = metavarOption (* Getter metavariable probably variable H*)
 let grammarLine_getItemsOption (GrammarLine(_, _, itemsOption)) = itemsOption 
 
-let term_getCNAME (Constr(cname,_)) = cname 
+(* From (t : term), extract its CNAME : String*)
+let rec term_getCNAME (t : term) =
+	match t with
+	| (Constr (cname, _)) -> cname
+	| LangVar cname -> cname
+	| BoundVar -> "BoundVar"
+	| BoundTypeVar -> "BoundTypeVar"
+	| Abs t' -> "Abs_" ^ (term_getCNAME t')
+	| AbsType t' -> "AbsType_" ^ (term_getCNAME t')
+	| Substitution (t', t'', t''') -> "Substitution_" ^ (term_getCNAME t') ^ (term_getCNAME t'') ^ (term_getCNAME t''')
+	| _ -> raise(Failure(dump t))
+	(* | _ -> "ERROR" *)
+
 let term_getArguments (Constr(_,ts)) = ts 
 
 (* let term_getCNAME t = match t with 
