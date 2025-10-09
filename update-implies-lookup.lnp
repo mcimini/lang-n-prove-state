@@ -5,8 +5,7 @@ for each s in states,
     (UpdateMap : =UpdateMap_(s)= map l e map') ->
     (LookupMap : =LookupMap_(s)= map' l e).
 Proof.
-    _ : induction on H1.
-    StUpdate : case  UpdateMap.
+    StUpdate : induction on UpdateMap.
     search.
     _ : apply IH0 to StUpdate.
     search

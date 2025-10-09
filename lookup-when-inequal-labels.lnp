@@ -7,14 +7,4 @@ Theorem Lookup-When-Inequal-labels_(s) :
     (_ : =LookupMap_(s)= map l2 e2) ->
     (_ : =LookupMap_(s)= map' l2 e2).
 Proof.
-        _ : induction on Two.
-        intros.
-        STupdate : case STupdate.
-            _ : case STlookup.
-            _ : apply Inequality-contradiction to Lanld.
-                search.
-
-    STlookup : case STlookup.
-        search.
-        _ : apply IH to Lanld STupdate STlookup.
-        search
+skip
