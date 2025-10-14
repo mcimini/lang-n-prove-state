@@ -11,12 +11,7 @@ Define typeOfH: envH -> mapH -> prop by
         {lookupEnvH EnvH l t} ->
         exists e, {lookupMapH MapH l e} /\ {typeOf (nilEnvT) EnvH e t}.
 
-Theorem  Find-type-in-envH  :
-    forall envH mapH L e T,
-    {lookupMapH mapH L e} ->
-    typeOfH envH mapH ->
-    {typeOf (nilEnvT) envH (labelH L) (refH T)} ->
-    {typeOf (nilEnvT) envH e T}. 
+Theorem  Find-type-in-envH  : forall envH mapH L e T, {lookupMapH mapH L e} -> typeOfH envH mapH -> {typeOf (nilEnvT) envH (labelH L) (refH T)} -> {typeOf (nilEnvT) envH e T}. 
 skip. 
 
 Theorem TypeOf-updateH: 
@@ -31,17 +26,13 @@ skip.
 
 Theorem TypeOf-weakeningH: 
 	forall envH mapH E T l,
-    typeOfH envH mapH ->       (* the memory mapH is well typed in terms of an environment envH *)
-    {typeOf nilEnvT envH E T} -> (* In the well typed environment envH, E has typed T *)
-    typeOfH (consEnvH l T envH) (consMapH l E mapH). (* Then the memory mapH is well typed with an environment envH *)
+    typeOfH envH mapH ->
+    {typeOf nilEnvT envH E T} ->
+    typeOfH (consEnvH l T envH) (consMapH l E mapH).
 skip. 
 
-Theorem H : forall mapH E mapH' L T envH,  
-{addMapH mapH E mapH' L} -> (* Given a memory MapH, and an expression E, if E is added to the memory,
-                                it results in a new memory mapH' and a label L*)
-typeOfH (consEnvH L T envH) (consMapH L E mapH) -> (* If the heap L E mapH, a is well typed memory
-                                                            in terms of some well-typed environment consEnvH L T envH *)
-typeOfH (consEnvH L T envH) mapH'.  (* Then, the updated memory is well-typed in terms of the same environment as the old memory*)
+Theorem TypeOf-addH : forall mapH E mapH' L T envH,  
+{addMapH mapH E mapH' L} -> typeOfH (consEnvH L T envH) (consMapH L E mapH) -> typeOfH (consEnvH L T envH) mapH'. 
 skip.
 
 
@@ -136,22 +127,15 @@ IH0 : induction on 1. intros Main TypeOfH. Typing0: case Main.
  backchain Progress-unit. 
 
 
-% I - VII iterates for each e in Expression (abs, app, ref, deref, assign, ref, unit)
-
 Theorem Type-preservation: forall EnvH, forall e, forall typ, forall H, forall e', forall H', {typeOf (nilEnvT) EnvH e typ} -> typeOfH EnvH H -> {step e H e' H'} -> exists EnvH', {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' e' typ} /\ typeOfH EnvH' H'. 
 IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.  
-
-% I) abs 
  Beginsabs: apply Step. 
  Prem0: case Step(keep).  
   
-% II) app
  Beginsapp: apply Step. 
  Prem0: case Step(keep).  
  case Typing0(keep).  
-
- % 1th reduction rule
- TypingInsertedV: apply Typing1.  % Where is this "v" coming from?
+ TypingInsertedV: apply Typing1. 
  witness EnvH.  
  split.  
  search.  
@@ -173,11 +157,8 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
   
  search.  
  search.  
-
- % III) ref
  Beginsref: apply Step. 
- Prem0: case Step(keep).
-   
+ Prem0: case Step(keep).  
  TypingInsertedV: apply Typing0. 
  TypingInsertedLNewH : assert {typeOf (nilEnvT) (consEnvH LNewH T EnvH) (labelH LNewH) (refH T)}.  
  SubsetEnvH : assert {subsetEnvH EnvH (consEnvH LNewH T EnvH)}.  
@@ -196,8 +177,6 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  search.  
  search.  
-
- % IV) deref
  Beginsderef: apply Step. 
  Prem0: case Step(keep).  
  TypingInsertedL: apply Typing0. 
@@ -214,8 +193,6 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  search.  
  search.  
-
- % V) assign
  Beginsassign: apply Step. 
  Prem0: case Step(keep).  
  TypingInsertedL: apply Typing0. 
@@ -242,12 +219,9 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
   
  search.  
  search.  
-
- % VI) label
  BeginsL1: apply Step. 
  Prem0: case Step(keep).  
-
-% VII) unit
+  
  Beginsunit: apply Step. 
  Prem0: case Step(keep).  
  
