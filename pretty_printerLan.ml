@@ -18,26 +18,57 @@ and language_prettyPrintTerm_map_version hypotheticalFlag t = language_prettyPri
 
 let language_prettyPrintHypotheticalWrap predname arguments = 
 	let typeEnv = List.nth arguments 0 in 
-	let argsWithoutTypeEnv = if no_environment then List.tl arguments else arguments in 
-	if term_isConstr typeEnv 
-		then let plainFormula = predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version true) argsWithoutTypeEnv)) in 
-				match typeEnv with 
-					    | (Constr("gammaAddx", [t])) -> "(pi x\\ typeOf x " ^ (language_prettyPrintTerm t true) ^ " => " ^ plainFormula ^ ")"
-						| (Constr("gammaAddX", [])) -> "(pi x\\ " ^ plainFormula ^ ")"
-		else predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version false) argsWithoutTypeEnv))
+		let argsWithoutTypeEnv =
+			if no_environment
+			then List.tl arguments
+			else arguments in 
+				if term_isConstr typeEnv 
+				then let plainFormula = predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version true) argsWithoutTypeEnv)) in 
+						match typeEnv with 
+								| (Constr("gammaAddx", [t])) -> "(pi x\\ typeOf x " ^ (language_prettyPrintTerm t true) ^ " => " ^ plainFormula ^ ")"
+								| (Constr("gammaAddX", [])) -> "(pi x\\ " ^ plainFormula ^ ")"
+								| _ ->  predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version false) argsWithoutTypeEnv))
+								(* | _ -> "pretty_printerLan.ml-33-ERROR" *)
+				else predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version false) argsWithoutTypeEnv))
 
+let rec pop_n a n =
+	match a with
+	| [] -> []
+	| h::t -> if n == 0
+			  then t
+			  else h :: (pop_n t (n - 1))
+	
 let language_prettyPrintFormula formula = 
 	let predname = formula_getPredname formula in 
-	let arguments = formula_getArguments formula in 
-	if formula_getPredname formula = "typeOf" 
-		then language_prettyPrintHypotheticalWrap predname arguments 
-		else predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version false) arguments))
+		let arguments = formula_getArguments formula in 
+			match predname with
+			| "typeOf" -> language_prettyPrintHypotheticalWrap predname arguments
+			| "user-defined" -> language_prettyPrintHypotheticalWrap "" arguments (* accounts for add or multiply *)
+			| "lookup" ->
+				language_prettyPrintHypotheticalWrap
+					("lookupMap" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n arguments 2)
+			| "update" ->
+				language_prettyPrintHypotheticalWrap
+					(* ("updateMap" ^ ( term_getCNAME  (List.nth arguments 1))) (List.tl (List.tl arguments)) *)
+					("updateStrongMap" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n (pop_n arguments 5) 1)
+			| "updateStrong"
+				-> language_prettyPrintHypotheticalWrap
+					(* ("updateStrongMap" ^ ( term_getCNAME  (List.nth arguments 1))) (List.tl (List.tl arguments)) *)
+					("updateStrongMap" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n (pop_n arguments 5) 1)
+			| "add" ->
+				language_prettyPrintHypotheticalWrap
+					(* ("updateMap" ^ ( term_getCNAME  (List.nth arguments 1))) (List.tl (List.tl arguments)) *)
+					("add" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n (pop_n arguments 5) 1)
+			| _ -> predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version false) arguments))
 
 let language_prettyPrintRule rule = 
 	let conclusion = rule_getConclusion rule in 
-	let premises = rule_getPremises rule in
-	let displayPremises = if premises = [] then "" else " :- " ^ (String.concat ", " (List.map language_prettyPrintFormula premises)) in 
-	           (language_prettyPrintFormula conclusion) ^ displayPremises ^ ".\n"
+		let premises = rule_getPremises rule in
+			let displayPremises =
+				match premises with
+				| [] -> ""
+				| _ -> " :- " ^ "" ^ (String.concat ", " (List.map language_prettyPrintFormula premises))  in 
+						"" ^ (language_prettyPrintFormula conclusion) ^ displayPremises ^ ".\n"
 
 let language_prettyPrintRules lan = 
 	(* create a map: op -> its typing rule *)
