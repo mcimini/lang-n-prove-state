@@ -11,9 +11,11 @@ Subset1: case Subset.
 search.
 Subset2: apply Assert to.
 Typing0: case Main.
+_ : apply IH0 to Typing0 Subset2.
+
 for each e in Expression: 
     if constructed(e) then
-        for each i in contextualArgs(e): _ : apply IH0 to Typing_(i) endfor.
+        for each i in contextualArgs(e): _ : apply IH0 to Typing_(i) Subset2 endfor.
         search
     else
         _ : apply Lookup-store-weakening to Subset2 Typing0.

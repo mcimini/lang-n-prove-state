@@ -2,7 +2,7 @@ for each s in states,
     Theorem  Find-type-in-env_(s)  :
         forall*,
         (Lookup  : =LookupMap_(s)= map l e) ->
-        (TypeOfH : =TypeOf_(s)= env map) ->
+        (TypeOf_(s) : =TypeOf_(s)= env map) ->
         (TypeOf : typeOf (nilEnvT) env (label l) (ref t)) ->
         (_ : typeOf (nilEnvT) env e t).
 Proof.

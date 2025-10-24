@@ -1,7 +1,7 @@
 for each s in states,
 Theorem Lookup-When-Inequal-labels_(s) :
     forall*,
-    (_ : eq l1 l2) ->
+    (l1 = l2) ->
     (_ : false) ->
     (_ : =UpdateMap_(s)= map l1 e1 map') ->
     (_ : =LookupMap_(s)= map l2 e2) ->
@@ -10,7 +10,7 @@ Proof.
     _ : induction on Two.
     intros.
     STupdate : case H2.
-        _ : case STlookup.
+        _ : case H3.
         _ : apply Inequality-contradiction to H1.
             search.
 
