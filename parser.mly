@@ -93,6 +93,7 @@
 %token STATES
 %token WEAKSTATES
 %token STATEENV
+%token ALLENVS
 %token PRIME
 %token NEWENTRY
 %token CAN
@@ -202,6 +203,8 @@ evalExp:
       { States(true) }
   | STATEENV LPAREN t = evalExp RPAREN
       { StateEnv t } 
+  | ALLENVS
+    { StateEnv (States (false)) }
   | PRIME LPAREN t = evalExp RPAREN
       { Prime t } 
   | NEWENTRY LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
