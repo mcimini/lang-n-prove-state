@@ -11,7 +11,7 @@ Proof.
     intros.
     STupdate : case H2.
         _ : case H3.
-        _ : apply Inequality-contradiction to H1.
+        _ : apply Inequality-contradiction_(s) to H1.
             search.
 
     STlookup : case H3.
