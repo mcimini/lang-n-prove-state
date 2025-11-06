@@ -94,6 +94,7 @@
 %token WEAKSTATES
 %token STATEENV
 %token LABELOF
+%token REFOF
 %token ALLENVS
 %token PRIME
 %token NEWENTRY
@@ -206,6 +207,8 @@ evalExp:
       { StateEnv t } 
   | LABELOF LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
 	  { LabelOf(t1, t2) }
+  | REFOF LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
+	  { RefOf(t1, t2) }
   | ALLENVS
     { StateEnv (States (false)) }
   | PRIME LPAREN t = evalExp RPAREN

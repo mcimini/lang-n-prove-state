@@ -104,6 +104,7 @@ rule token = parse
   | "weakstates"               { WEAKSTATES } 
   | "state_env"               { STATEENV } 
   | "labelOf"               { LABELOF } 
+  | "refOf"               { REFOF } 
   | "all_envs"            { ALLENVS }
   | "prime"               { PRIME } 
   | "mapNewEntry"               { NEWENTRY } 

@@ -183,6 +183,9 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 	| LabelOf(t1, t2) -> begin match (eval lan t1) with
 		| Term (Var statevar) -> Term (Constructor( "label" ^ statevar , [t2]))
 		end
+	| RefOf(t1, t2) -> begin match (eval lan t1) with
+		| Term (Var statevar) -> Term (Constructor( "ref" ^ statevar , [t2]))
+		end
 	| Prime(t) -> begin match eval lan t with Term(t1) -> Term(prime_a_variable t1) | ListOfTerms(l) -> Term (Constructor("", (List.map prime_a_variable l))) end (* ListOfTerms (List.map prime_a_variable l) *)
 	| MapNewEntry(t1,t2) -> 
 			begin match (eval_getTerm (eval lan t1), eval_getTerm (eval lan t2)) with LNPRule(premises, concl), Var envVar -> 
