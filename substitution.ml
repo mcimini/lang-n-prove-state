@@ -42,6 +42,7 @@ let rec substitution_evaluatedExpression evaluatedExpression var term = match ev
 | LNPFormula(formula, n) -> LNPFormula(formula, n) 
 | States(b) -> States(b)
 | StateEnv(t) -> StateEnv(substitution_evaluatedExpression t var term)
+| LabelOf(t1, t2) -> LabelOf(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | Prime(t) -> Prime(substitution_evaluatedExpression t var term)
 | MapNewEntry(t1, t2) -> MapNewEntry(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | Can(t) -> Can(substitution_evaluatedExpression t var term)

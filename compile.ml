@@ -179,6 +179,10 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 			let _ = print_string ("Calculate state envs: " ^ dump abc) in *)
 			ListOfTerms (List.map langConstructor_to_LNPConstructor (List.map (retrieve_env_by_state lan) (List.map lnpConstructor_to_langConstructor l))) 
 		end
+	(* t2, the l, could be argument or string *)
+	| LabelOf(t1, t2) -> begin match (eval lan t1) with
+		| Term (Var statevar) -> Term (Constructor( "label" ^ statevar , [t2]))
+		end
 	| Prime(t) -> begin match eval lan t with Term(t1) -> Term(prime_a_variable t1) | ListOfTerms(l) -> Term (Constructor("", (List.map prime_a_variable l))) end (* ListOfTerms (List.map prime_a_variable l) *)
 	| MapNewEntry(t1,t2) -> 
 			begin match (eval_getTerm (eval lan t1), eval_getTerm (eval lan t2)) with LNPRule(premises, concl), Var envVar -> 
