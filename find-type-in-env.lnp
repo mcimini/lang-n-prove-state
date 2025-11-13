@@ -3,12 +3,12 @@ for each s in states,
         forall*,
         (Lookup  : =LookupMap_(s)= map l e) ->
         (TypeOf_(s) : =TypeOf_(s)= state_env(s) map) ->
-        (TypeOf : typeOf (nilEnvT) all_envs (label l) (ref t)) ->
+        (TypeOf : typeOf (nilEnvT) all_envs labelOf(s, l) refOf(s, t) ) ->
         (_ : typeOf (nilEnvT) all_envs e t).
 Proof.
     intros.
     _ : case TypeOf.
-    _ : case TypeOfH.
+    _ : case TypeOf_(s).
     _ : apply H2 to H1 with env=env..
     _ : apply Uniqueness-of-lookupMap_(s) to Lookup H3.
     search
