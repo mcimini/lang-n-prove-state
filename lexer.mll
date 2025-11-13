@@ -103,6 +103,7 @@ rule token = parse
   | "states"               { STATES } 
   | "weakstates"               { WEAKSTATES } 
   | "state_env"               { STATEENV } 
+  | "map_env"               { MAPENV } 
   | "labelOf"               { LABELOF } 
   | "refOf"               { REFOF } 
   | "all_envs"            { ALLENVS }

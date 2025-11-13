@@ -35,8 +35,8 @@ let rec term_getCNAME (t : term) =
 	| Abs t' -> "Abs_" ^ (term_getCNAME t')
 	| AbsType t' -> "AbsType_" ^ (term_getCNAME t')
 	| Substitution (t', t'', t''') -> "Substitution_" ^ (term_getCNAME t') ^ (term_getCNAME t'') ^ (term_getCNAME t''')
-	| _ -> raise(Failure(dump t))
-	(* | _ -> "ERROR" *)
+	(* | _ -> raise(Failure(dump t)) *)
+	| _ -> "term_getCNAME_ERROR"
 
 let term_getArguments (Constr(_,ts)) = ts 
 
@@ -245,6 +245,7 @@ let language_get_strong_maps lan : term list =
 		result
 		
 let retrieve_env_by_state lan (LangVar var) = LangVar ("Env" ^ var)
+let retrieve_map_by_state lan (LangVar var) = LangVar ("Map" ^ var)
 	
 let var_and_names_equality s1 s2 : bool = (String.trim s1) = (String.trim s2)
 

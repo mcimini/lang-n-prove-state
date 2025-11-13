@@ -47,6 +47,7 @@ and evaluatedExpression =
   | ExtendState of evaluatedExpression * evaluatedExpression
   | States of bool (* boolean says whether you are retrieving only 'weak' states, not strong updates. *)
   | StateEnv of evaluatedExpression
+  | MapEnv of evaluatedExpression
   | LabelOf of evaluatedExpression * evaluatedExpression
   | RefOf of evaluatedExpression * evaluatedExpression
   | Prime of evaluatedExpression

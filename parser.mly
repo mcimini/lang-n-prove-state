@@ -93,6 +93,7 @@
 %token STATES
 %token WEAKSTATES
 %token STATEENV
+%token MAPENV
 %token LABELOF
 %token REFOF
 %token ALLENVS
@@ -204,7 +205,9 @@ evalExp:
   | WEAKSTATES
       { States(true) }
   | STATEENV LPAREN t = evalExp RPAREN
-      { StateEnv t } 
+      { StateEnv t }
+  | MAPENV LPAREN t = evalExp RPAREN
+      { MapEnv t } 
   | LABELOF LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
 	  { LabelOf(t1, t2) }
   | REFOF LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
