@@ -1,4 +1,6 @@
 %{
+  module Option = BatOption
+  open Lnp
   open Language
 %}
 
