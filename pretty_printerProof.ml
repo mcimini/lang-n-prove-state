@@ -1,7 +1,30 @@
-(* only map, not 'forall' and label *)
-(* also include in lookupEnv and subsetEnv *)
+(* Description:  Generate type of definition for single of multiple mapped languages*)
+(* Input : (ms : list string) representing the language meta variable map*)
+(* Output : string Representing all needed typeof definitions*)
+let define_typeof (ms : string list) : string =
+  let rec define_typeof_helper l =
+    match l with
+    | [] -> ""
+    | h :: t ->
+        let ms_non_self = List.filter (fun x -> x <> h) ms in
+        let typeof_H =
+          List.map (fun t1 ->
+            "Define typeOf" ^ h ^ ": env" ^ h ^ " -> map" ^ h ^ " -> prop by\n
+            typeOf" ^ h ^ " Env" ^ h ^ " Map" ^ h ^ " := forall l, forall t,\n
+            {lookupEnv" ^ h ^ " Env" ^ h ^ " l t} ->\n
+              exists e, {lookupMap" ^ h ^ " Map" ^ h ^ " l e} /\\ {typeOf (nilEnvT) Env" ^ h ^ " (nilEnv" ^ t1 ^ ") e t}.\n"
+          ) ms_non_self
+        in
+        String.concat "\n" typeof_H ^ "\n" ^ define_typeof_helper t
+  in
+  match ms with
+  | [h] -> "Define typeOf" ^ h ^ ": env" ^ h ^ " -> map" ^ h ^ " -> prop by\n
+    typeOf" ^ h ^ " Env" ^ h ^ " Map" ^ h ^ " := forall l, forall t,\n
+    {lookupEnv" ^ h ^ " Env" ^ h ^ " l t} ->\n
+    exists e, {lookupMap" ^ h ^ " Map" ^ h ^ " l e} /\\ {typeOf (nilEnvT) Env" ^ h ^ " e t}.\n"
+  | _ -> define_typeof_helper ms
 
-let uniqueness_of_lookupMap (m : string) : string = 
+  let uniqueness_of_lookupMap (m : string) : string = 
   "Theorem Uniqueness-of-lookupMap" ^ m ^" : forall map L e1 e2, {lookupMap" ^ m ^" map L e1} -> {lookupMap" ^ m ^ " map L e2} -> e1 = e2.
 skip.\n"
 
@@ -25,7 +48,7 @@ let uniqueness_of_lookupEnv (m : string) : string =
 
 (* NOTE need to scape \/ *)
 let excluded_middle_labels (m : string) : string =
-  "Theorem excluded_middle_labels : forall (l1 : label"^ m ^") (l2 : label" ^ m ^ "), (l1 = l2) \/ (l1 = l2 -> false).\n skip.\n"
+  "Theorem excluded_middle_labels : forall (l1 : label"^ m ^") (l2 : label" ^ m ^ "), (l1 = l2) \\/ (l1 = l2 -> false).\n skip.\n"
 
 let update_implies_lookup (m : string) : string  = 
   "Theorem update_implies_lookup" ^ m ^" :
@@ -137,22 +160,7 @@ let typeOf_add (m : string) : string =
   Subset: case Main.
   search.\n"
 
-(* Input : (m : string) representing the language meta variable map*)
-(* Output : (m : string) all map-specific-proofs common in all languages*)
-(* let generate_all_common_proofs (m : string) : string =
-    (uniqueness_of_lookupMap m) ^
-    (find_type_in_env m) ^
-    (uniqueness_of_lookupEnv m) ^
-    (excluded_middle_labels m) ^
-    (update_implies_lookup m) ^
-    (inequality_contradiction m) ^
-    (lookup_when_inequal_labels m) ^
-    (typeOf_update m) ^
-    (labels_remain_in_extended m) ^
-    (typeOf_weakening m) ^
-    (typeOf_add m) *)
-
-(* Description:  *)
+(* Description: Generates all common Theorems *)
 (* Input : (m : string) representing the language meta variable map*)
 (* Output : (m : string) all map-specific-proofs common in all languages*)
 let generate_all_common_proofs (m : string) : string =

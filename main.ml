@@ -160,13 +160,8 @@ let applyAllSchemasToOneLanguages_to_file filenameLan =
 	let thm_file = open_out ("./generated/" ^ nameOfLanguage ^ ".thm") in
 	output_string thm_file ("Specification \"" ^ nameOfLanguage ^ "\". \n\n");
 
-	(* output_string thm_file (Pretty_printerProof.uniqueness_of_lookupMap "dfgdfgd"); *)
-	(* output_string thm_file (Pretty_printerProof.generate_all_common_proofs "aasdfdfg"); *)
-	(* output_string thm_file (Pretty_printerProof.generate_all_common_proofs "aasdfdfg"); *)
-
-		(* TODO remove iter later and use recursion *)
-		(* Iterate over all metavariable and generate the variable specific proof *)
 		let meta_vars = language_get_metavariables_map lan in
+		output_string thm_file  (Pretty_printerProof.define_typeof meta_vars);
 		List.iter (fun m ->
 				let proof_block = Pretty_printerProof.generate_all_common_proofs m in
 				output_string thm_file (proof_block ^ "\n")
