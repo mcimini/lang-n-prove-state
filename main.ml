@@ -78,8 +78,8 @@ let typeSoundnessState = [
 ; *)
 (* "./typeOf-update.lnp"
 ; *)
-(* "./type-state-envs-weakening.lnp"
-; *)
+"./type-state-envs-weakening.lnp"
+;
 (* "./typeOf-weakening.lnp"
 ; *)
 (* "./typeOf-add.lnp"
