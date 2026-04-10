@@ -1,24 +1,24 @@
-for each s in states,
-    Theorem Type-state-envs-weakening: 
+for each s in weakstates,
+    Theorem Type-state-envs-weakening-_(s): 
         forall*,
-        (Main : typeOf gamma env e t) ->
-        (Subset : =SubsetEnv_(s)= env env') ->
-        (_ : typeOf gamma env' e t).
+        (Main : typeOf gamma state_env(states) e t) ->
+        (Subset : =SubsetEnv_(s)= state_env(s) prime(state_env(s))) ->
+        (_ : typeOf gamma prime(state_env(states) only state_env(s)) e t).
 Proof.
-_ : induction on Main.
+_ : induction on Main. undo. 
 
 Subset1: case Subset.
 search.
-Subset2: apply Assert to.
+assert (Subset_(2) : =SubsetEnv_(s)= state_env(s) makeCons(state_env(s), L, T, Rest)). 
+
 Typing0: case Main.
-_ : apply IH0 to Typing0 Subset2.
 
 for each e in Expression: 
     if constructed(e) then
-        for each i in contextualArgs(e): _ : apply IH0 to Typing_(i) Subset2 endfor.
+        for each i in inductiveArgs(e,E): M_(e) : apply IH0 to Typing_(i) Subset2 endfor.
         search
     else
-        _ : apply Lookup-store-weakening to Subset2 Typing0.
+        _ : apply Lookup-store-weakening-_(s) to Subset2 Typing0.
         search
 endfor
 

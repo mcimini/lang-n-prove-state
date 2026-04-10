@@ -252,7 +252,7 @@ let var_and_names_equality s1 s2 : bool = (String.trim s1) = (String.trim s2)
 let replace_charater_in_string (c1 : string) (c2 : string) s = let (c1,c2) = (c1.[0], c2.[0]) in  String.map (fun c -> if c = c1 then c2 else c) s
 let rplc c1 c2 s = replace_charater_in_string c1 c2 s
 
-let rec language_get_metavariables_map_helper g_l acc var_list =
+let rec language_get_metavariables_map_helper_extensible g_l acc var_list =
 	match g_l with
 	| [] -> acc
 	| grammar_line :: rest ->
@@ -268,11 +268,52 @@ let rec language_get_metavariables_map_helper g_l acc var_list =
 						| _ -> ()
 						) items
 			in
-				language_get_metavariables_map_helper rest acc var_list
-		| None -> language_get_metavariables_map_helper rest acc var_list
+				language_get_metavariables_map_helper_extensible rest acc var_list
+		| None -> language_get_metavariables_map_helper_extensible rest acc var_list
 	
-let language_get_metavariables_map (lan : language) : string list =
+let language_get_metavariables_map_extensible (lan : language) : string list =
 	let var_list = ref [] in
 	let grammar_lines = language_getGrammar lan in
-	language_get_metavariables_map_helper grammar_lines [] var_list;
+	language_get_metavariables_map_helper_extensible grammar_lines [] var_list;
 	!var_list
+
+let rec language_get_metavariables_map_helper_fixed g_l acc var_list =
+	match g_l with
+	| [] -> acc
+	| grammar_line :: rest ->
+		let g_l_items = (grammarLine_getItemsOption grammar_line) in
+		match g_l_items with
+		| Some items ->
+			let _ = List.map
+						(fun item ->
+						match item with
+						| Constr ("LNP_Map_Strong", _) ->
+							let mta_var = grammarLine_getMetavarOption grammar_line in
+							var_list := get mta_var :: !var_list;
+						| _ -> ()
+						) items
+			in
+				language_get_metavariables_map_helper_fixed rest acc var_list
+		| None -> language_get_metavariables_map_helper_fixed rest acc var_list
+
+let language_get_metavariables_map_fixed (lan : language) : string list =
+	let var_list = ref [] in
+	let grammar_lines = language_getGrammar lan in
+	language_get_metavariables_map_helper_fixed grammar_lines [] var_list;
+	!var_list
+
+
+let language_get_metavariables_map lan = language_get_metavariables_map_extensible lan @ language_get_metavariables_map_fixed lan
+
+let language_isThereMoreThanOneState lan = 
+	let relationGrammarLine = language_grammarLookupByCategory lan "Relation" in 
+		if relationGrammarLine = [] 
+		then raise(Failure("isThereMoreThanOneState(), language_grammarLookupByCategory, Relation not found")) 
+		else 
+			let listOfAllArgsOfStep = term_getArguments (List.hd (language_grammarLookupByCategory lan "Relation")) in 
+			(List.length listOfAllArgsOfStep) > 4
+
+let is_environment_metavar metavar : bool = (* starts_with is giving problems in my version ... to be safe, I will check manually  *)
+	if String.length metavar > 2 then 
+			metavar.[0] = 'N' && metavar.[1] = 'v' && metavar.[2] = 'r' 
+	else false

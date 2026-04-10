@@ -1,0 +1,41 @@
+Heap H ::= [L |-> E]
+Type T ::= (arrow T T) | (refH T) | (unitT) | (pairType T T)
+Expression E ::= x | (abs T (x)E) | (app E E) | (ref E) | (deref E) | (assign E E) | (pair E E) | (doubleRef E) | (doubleDeref E) | (labelH L) | (unit) 
+Value V ::= (abs T R) | (labelH L) | (unit) | (pair V1 V2)
+Error ::=
+Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) 
+Relation R ::= (step E H E H)
+.
+Gamma ; EnvH |- (abs T1 R) : (arrow T1 T2) <== Gamma, x : T1 ; EnvH |- R : T2.
+Gamma ; EnvH |- (app E1 E2) : T2 <== Gamma ; EnvH |- E1 : (arrow T1 T2) /\ Gamma ; EnvH |- E2 : T1.
+Gamma ; EnvH |- (ref E): (refH T) <== Gamma ; EnvH |- E : T.
+Gamma ; EnvH |- (deref E): T <== Gamma ; EnvH |- E : (refH T).
+
+Gamma ; EnvH |- (pair E1 E2) : (pairType T1 T2) <== Gamma ; EnvH |- E1 : T1 /\ Gamma ; EnvH |- E2 : T2.
+
+Gamma ; EnvH |- (doubleRef E): (pairType (refH (refH T)) (refH T)) <== Gamma ; EnvH |- E : T.
+Gamma ; EnvH |- (doubleDeref E): T <== Gamma ; EnvH |- E : (refH (refH T)).
+
+
+Gamma ; EnvH |- (assign E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (refH T) /\ Gamma ; EnvH |- E2: T.
+Gamma ; EnvH |- (labelH L) : (refH T) <== T <- HT@H(L).
+Gamma ; EnvH |- (unit ) : (unitT ).
+
+
+(app (abs T R) V); H --> R[V/x]; H <== value V.
+(ref V); H --> (label LNewH); H' <== 
+	H'@H, LNewH <- H + V /\ 
+	H' <: (env (labelH LNewH) (refH T) (consEnvH LNewH T EnvH)).
+	
+(deref (label L)); H --> V; H <== V <- H@H(L).
+(assign (label L) V); H --> (unit); H' <== H'@H <- H[L|->V].
+
+(doubleRef V); H --> (pair (labelH LNewH2) (labelH LNewH1)); H'' <== 
+	H'@H, LNewH1 <- H + V /\ 
+	H''@H, LNewH2 <- H' + (labelH LNewH1) /\ 
+	H' <: (env (labelH LNewH1) (refH T) (consEnvH LNewH1 T EnvH)) /\
+	H'' <: (env (labelH LNewH2) (refH (refH T)) (consEnvH LNewH2 (refH T) (consEnvH LNewH1 T EnvH))).
+
+(doubleDeref (label L)); H --> V; H <== 
+	(labelH L2) <- H@H(L) /\ 
+	V <- H@H(L2).

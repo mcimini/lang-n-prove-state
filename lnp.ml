@@ -50,11 +50,16 @@ and evaluatedExpression =
   | MapEnv of evaluatedExpression
   | LabelOf of evaluatedExpression * evaluatedExpression
   | RefOf of evaluatedExpression * evaluatedExpression
-  | Prime of evaluatedExpression
+  | Prime of evaluatedExpression * (evaluatedExpression option) * bool (* option says the term not to prime if ONLY is inserted. boolean says that EXCEPT has been inserted rather than ONLY. *)
   | MapNewEntry of evaluatedExpression * evaluatedExpression
   | Can of evaluatedExpression
   | FindVar of evaluatedExpression * evaluatedExpression
   | FindVarTest of evaluatedExpression * evaluatedExpression
+  | MakeCons of evaluatedExpression * evaluatedExpression * evaluatedExpression * evaluatedExpression
+  | InductiveArgs of evaluatedExpression * evaluatedExpression
+  | IsLabel of evaluatedExpression
+  | Irrelevant of evaluatedExpression
+  
 and formula =
   | Top
   | Bottom
@@ -82,6 +87,9 @@ type proof =
   | Search
   | NoOp
   | Skip
+  | DoNotGenerateThisProof
+  | Undo
+  | Unfold
   | Case of lnp_name * lnp_name 
   | CaseStar of lnp_name * lnp_name * proof (* not in use *)
   | Induction of lnp_name * lnp_name 
@@ -261,3 +269,10 @@ let last_character str = get str ((String.length str) - 1)
 
 let input_is_about_state_string (envVarname : string) (str : string) = (first_character str) = (last_character envVarname) 
 let input_is_about_state (envVarname : string) (e : evaluatedExpression) = match e with | Var(var) -> input_is_about_state_string envVarname var | _ -> false
+
+let getEnvMetaVar m = "env" ^ m
+let getEnvMetaVars ms = List.map getEnvMetaVar ms
+
+let getEnvMetaVarCapitalized m = "Env" ^ m
+let getEnvMetaVarsCapitalized ms = List.map getEnvMetaVarCapitalized ms
+

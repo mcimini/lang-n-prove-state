@@ -1,8 +1,8 @@
 Heap H ::= [L |-> E]
 RegisterFile R ::= [Z |-> E] strong
 Register Z ::= (r1) | (r2) 
-Type T ::= (int) | (refH T) | (unitT) | (codeT T T)
-Expression E ::= x | (zero) | (one) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (bnz Z E E) | (code T T E) | (labelH L) 
+Type T ::= (int) | (refH T) | (unitT) | (codeT NvrR)
+Expression E ::= x | (zero) | (one) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (bnz Z E E) | (code NvrR E) | (labelH L) 
 Value V ::= (halt) | (zero) | (one) | (labelH L) 
 Relation R ::= (step E H R E H R)
 Error ::=
@@ -17,8 +17,8 @@ Gamma ; EnvH ; EnvR |- (load Zd Zs E) : (unitT) <== Gamma ; EnvR |- Zd : SomeT /
 Gamma ; EnvH ; EnvR |- (malloc Zd E1 E2) : (unitT) <== Gamma ; EnvR |- Zd : SomeT /\ Gamma ; EnvH ; EnvR |- E1 : T /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->T].
 Gamma ; EnvH ; EnvR |- (move Zd E1 E2) : (unitT) <== Gamma ; EnvR |- Zd : SomeT /\ Gamma ; EnvH ; EnvR |- E1 : T /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->T].
 Gamma ; EnvH ; EnvR |- (store Zd Zs E) : (unitT) <== Gamma ; EnvR |- Zd : (refH T) /\ Gamma ; EnvR |- Zs : T /\ Gamma ; EnvH ; EnvR |- E : (unitT).
-Gamma ; EnvH ; EnvR |- (bnz Zs E1 E2) : (unitT) <== Gamma ; EnvR |- Zs : (int) /\ Gamma ; EnvH ; EnvR |- E1 : (refH (codeT T1 T2)) /\ Gamma ; EnvH ; EnvR |- E2 : (unitT) /\ retrieve EnvR@E1 |-> [(r1) : T1, (r2) : T2]. 
-Gamma ; EnvH ; EnvR |- (code T1 T2 E) : (codeT T1 T2) <== Gamma ; EnvH ; EnvR' |- E : (unitT)  /\ set EnvR' ::= [(r1)|->T1, (r2)|->T2]. 
+Gamma ; EnvH ; EnvR |- (bnz Zs E1 E2) : (unitT) <== Gamma ; EnvR |- Zs : (int) /\ Gamma ; EnvH ; EnvR |- E1 : (refH (codeT EnvR)) /\ Gamma ; EnvH ; EnvR |- E2 : (unitT).
+Gamma ; EnvH ; EnvR |- (code EnvR' E) : (codeT EnvR') <== Gamma ; EnvH ; EnvR' |- E : (unitT). 
 Gamma ; EnvH ; EnvR |- (labelH L) : (refH T) <== T <- HT@H(L).
 
 
@@ -53,7 +53,7 @@ Gamma ; EnvH ; EnvR |- (labelH L) : (refH T) <== T <- HT@H(L).
 
 (bnz Zs (labelH L) E2); H ; R --> E1; H ; R <== 
 	(zero) <- R@R(Zs) /\
-	(code T1 T2 E1) <- H@H(L).
+	(code EnvR E1) <- H@H(L).
 	
 (bnz Zs (labelH L) E); H ; R --> E; H ; R <== 
 	(one) <- R@R(Zs).

@@ -45,12 +45,15 @@ let rec substitution_evaluatedExpression evaluatedExpression var term = match ev
 | MapEnv(t) -> MapEnv(substitution_evaluatedExpression t var term)
 | LabelOf(t1, t2) -> LabelOf(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | RefOf(t1, t2) -> RefOf(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
-| Prime(t) -> Prime(substitution_evaluatedExpression t var term)
+| Prime(t, t2opt, b) -> if is_some t2opt then let (Some t2) = t2opt in Prime(substitution_evaluatedExpression t var term, Some (substitution_evaluatedExpression t2 var term), b) else Prime(substitution_evaluatedExpression t var term, t2opt, b)
 | MapNewEntry(t1, t2) -> MapNewEntry(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | Can(t) -> Can(substitution_evaluatedExpression t var term)
 | FindVar(t1, t2) -> FindVar(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | FindVarTest(t1, t2) -> FindVarTest(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
-
+| MakeCons(t1, t2, t3, t4) -> MakeCons(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term, substitution_evaluatedExpression t3 var term, substitution_evaluatedExpression t4 var term)
+| InductiveArgs(t1, t2) -> InductiveArgs(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
+| IsLabel(t) -> IsLabel(substitution_evaluatedExpression t var term)
+| Irrelevant(t) -> Irrelevant(substitution_evaluatedExpression t var term)
 
 and substitution_evaluatedExpression_mapversion var term evaluatedExpression = substitution_evaluatedExpression evaluatedExpression var term
 
@@ -87,6 +90,9 @@ let rec substitution_proof proof var term = match proof with
 	| Search -> Search
 	| NoOp -> NoOp
 	| Skip -> Skip
+	| DoNotGenerateThisProof -> DoNotGenerateThisProof
+	| Undo -> Undo
+	| Unfold -> Unfold
 	| Case(lnp_name1, lnp_name2) -> Case(substitution_lnp_name lnp_name1 var term, substitution_lnp_name lnp_name2 var term)
 	| CaseStar(lnp_name1, lnp_name2, proof) -> CaseStar(substitution_lnp_name lnp_name1 var term, substitution_lnp_name lnp_name2 var term, substitution_proof proof var term)
 	| Induction(lnp_name1, lnp_name2) -> Induction(substitution_lnp_name lnp_name1 var term, substitution_lnp_name lnp_name2 var term)

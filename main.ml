@@ -77,16 +77,19 @@ let typeSoundnessState = [
 (* "./lookup-when-inequal-labels.lnp"
 ; *)
 (* "./typeOf-update.lnp"
-; *)
+; 
 "./type-state-envs-weakening.lnp"
-;
+; *)
 (* "./typeOf-weakening.lnp"
 ; *)
 (* "./typeOf-add.lnp"
 ; *)
+"typeOf-irrelevanceOfEnv.lnp"
+; 
 "preservation-state.lnp" 
 ]
 
+let repoOfInitialSchemas = ["lookup-store-weakening.lnp" ; "./type-state-envs-weakening.lnp" ; "irrelevance-Env-for-ValueTyping.lnp"]
 let repoOfSchemas = typeSoundnessState
 
 (* Definitions to generate. You have to provide the body of the function generate_definitions *)
@@ -152,27 +155,40 @@ let applySchemaToAllLanguages filenameSchema =
 
 let applyAllSchemasToOneLanguages_to_file filenameLan = 	
 	let schemas = List.map parseTheSchema repoOfSchemas in 
+	let initialSchemas = List.map parseTheSchema repoOfInitialSchemas in 
 	let lan = parseOneLanguage filenameLan in
 	let result = List.concat (List.map (compile lan) schemas) in (* concat, so result is a list of theorem&proof *)
+	let initialThmAndProofs = List.concat (List.map (compile lan) initialSchemas) in (* concat, so result is a list of theorem&proof *)
 
 	let nameOfLanguage = Filename.chop_extension filenameLan in 
 	(* generate Abella proof .thm *)
 	let thm_file = open_out ("./generated/" ^ nameOfLanguage ^ ".thm") in
-	output_string thm_file ("Specification \"" ^ nameOfLanguage ^ "\". \n\n");
+	output_string thm_file ("Specification \"" ^ nameOfLanguage ^ "\". \n");
+	output_string thm_file ("Import \"" ^ nameOfLanguage ^ "User\". \n\n");
+
+	List.map (output_string thm_file) (List.map abella_thrAndProof initialThmAndProofs); 
 
 		let meta_vars = language_get_metavariables_map lan in
-		output_string thm_file  (Pretty_printerProof.define_typeof meta_vars);
+		let meta_vars_extensible = language_get_metavariables_map_extensible lan in
+		output_string thm_file  (Pretty_printerProof.define_typeof_extensible meta_vars meta_vars_extensible);
+		let meta_vars_fixed = language_get_metavariables_map_fixed lan in
+		(* now this prints typeof_extensible also for fixed *)
+		output_string thm_file  (Pretty_printerProof.define_typeof_extensible meta_vars meta_vars_fixed);
 		List.iter (fun m ->
-				let proof_block = Pretty_printerProof.generate_all_common_proofs m in
+				let proof_block = Pretty_printerProof.generate_all_common_proofs_extensible lan meta_vars m in
 				output_string thm_file (proof_block ^ "\n")
-		) meta_vars;
+		) meta_vars_extensible;
+		List.iter (fun m ->
+				let proof_block = Pretty_printerProof.generate_all_common_proofs_fixed lan meta_vars m in
+				output_string thm_file (proof_block ^ "\n")
+		) meta_vars_fixed;
 		
 
 	generate_definitions thm_file lan;
 	List.map (output_string thm_file) (List.map abella_thrAndProof result); 
     close_out thm_file;
 
-	(* generate language definition .mod  *)
+	(* generate language definition .mod  
 	let mod_file = open_out ("./generated/" ^ nameOfLanguage ^ ".mod") in
 	output_string mod_file ("module " ^ nameOfLanguage ^ ".\n\n"); 
 	
@@ -180,6 +196,7 @@ let applyAllSchemasToOneLanguages_to_file filenameLan =
 
 	output_string mod_file (language_prettyPrintRules lan); 
     close_out mod_file;
+		*)
 		
     print_endline ("Proofs generated in ./generated/" ^ nameOfLanguage ^ ".thm");;
 	

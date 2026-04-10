@@ -10,6 +10,8 @@ type token =
   | VAR of (string)
   | VALUESOF
   | VALUEARGS
+  | UNFOLD
+  | UNDO
   | UNDERSCORE
   | TRUE
   | TO
@@ -24,6 +26,7 @@ type token =
   | SEARCH
   | RPAREN
   | RIGHTSQUARE
+  | REFOF
   | RANGE
   | PROOF
   | PRIME
@@ -31,23 +34,30 @@ type token =
   | ORMACRO
   | OR
   | OPERATION
+  | ONLY
   | ON
   | OFTYPE
   | NOTTERM
   | NOP
   | NEWENTRY
   | NAME of (string)
+  | MAPENV
+  | MAKECONS
   | LPAREN
   | LET
   | LEFTSQUARE
+  | LABELOF
   | ISVAR
   | ISSINGLEVALUE
+  | ISLABEL
   | ISERRORHANDLER
   | ISELIM
   | ISDERIVED
   | IS
+  | IRRELEVANT
   | INTROS
   | INT of (int)
+  | INDUCTIVEARGS
   | INDUCTIONSTAR
   | INDUCTION
   | IN
@@ -66,6 +76,7 @@ type token =
   | EXISTSVARS
   | EXISTSSTAR
   | EXISTS
+  | EXCEPT
   | EVALORDER
   | EQUAL
   | EOF
@@ -78,6 +89,7 @@ type token =
   | ELSE
   | EACH
   | DOT
+  | DONOTGENERATE
   | CONTEXTARGS
   | CONTAINSSUB
   | CONSTRUCTED
@@ -94,6 +106,7 @@ type token =
   | ANDTERM
   | ANDMACRO
   | AND
+  | ALLENVS
 
 (* This exception is raised by the monolithic API functions. *)
 

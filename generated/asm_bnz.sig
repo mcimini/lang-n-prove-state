@@ -37,25 +37,24 @@ type r1 register.
 type r2 register. 
 
 kind mapR type.
-type contentMapR term -> term -> mapR.
+type nilMapR mapR.
+type consMapR register -> term -> mapR -> mapR.
 
 type lookupMapR mapR -> register -> term -> o.
 type updateMapR mapR -> register -> term -> mapR -> o.
 
 kind envR type.
-type contentEnvR typ -> typ -> envR.
+type nilEnvR envR.
+type consEnvR register -> typ -> envR -> envR.
 
 type lookupEnvR envR -> register -> typ -> o.
+type subsetEnvR envR -> envR -> o.
 type updateEnvR envR -> register -> typ -> envR -> o.
-type retrieveEnvR envR -> register -> typ -> register -> typ -> o.
-type setEnvR register -> typ -> register -> typ -> envR -> o.
 
-type typeOneZ envT -> envR -> register -> typ -> o.
 
 type int typ.
 type unitT typ.
 type refH typ -> typ. 
-type codeT typ -> typ -> typ. 
 
 type zero term.
 type one term.
@@ -67,8 +66,13 @@ type load register -> register -> term -> term.
 type malloc register -> term -> term -> term.
 type move register -> term -> term -> term.
 type store register -> register -> term -> term.
+
+
+type codeT envR -> typ. 
+type code envR -> term -> term.
+
 type bnz register -> term -> term -> term.
-type code typ -> typ -> term -> term. 
+
 
 type value term -> o.
 type step term -> mapH -> mapR -> term -> mapH -> mapR -> o.

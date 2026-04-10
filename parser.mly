@@ -68,6 +68,8 @@
 %token ENDIMPLY
 %token ENDIF
 %token SKIP
+%token UNDO
+
 
 %left IMPLYMACRO
 
@@ -105,6 +107,15 @@
 %token ASSERT
 %token CLEAR
 %token LET
+%token ONLY
+%token EXCEPT
+%token MAKECONS
+%token INDUCTIVEARGS
+%token ISLABEL
+%token UNFOLD
+%token IRRELEVANT
+%token DONOTGENERATE
+
 
 %token EOF
 
@@ -151,7 +162,7 @@ evalExp:
   | num = INT
     { Num num }
   | LPAREN opname = VAR es = list(evalExp) RPAREN /* (opname t1 ... tn)   opname is VAR */
-    { Constructor(opname, es) }
+    { Constructor(opname, es) }  
   | VALUESOF LPAREN t = evalExp RPAREN
     { ValuesOf t }
   | VALUEARGS LPAREN t = evalExp RPAREN
@@ -214,8 +225,10 @@ evalExp:
 	  { RefOf(t1, t2) }
   | ALLENVS
     { StateEnv (States (false)) }
-  | PRIME LPAREN t = evalExp RPAREN
-      { Prime t } 
+  | PRIME LPAREN t = evalExp t2opt = option(ONLY t2 = evalExp { t2 }) RPAREN
+      { Prime(t,t2opt, false) } 
+  | PRIME LPAREN t = evalExp t2opt = option(EXCEPT t2 = evalExp { t2 }) RPAREN
+      { Prime(t,t2opt, true) } 
   | NEWENTRY LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
       { MapNewEntry(t1,t2) } 
   | CAN LPAREN t = evalExp RPAREN
@@ -224,6 +237,14 @@ evalExp:
       { FindVar(t1,t2) } 
   | FINDVARTEST LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
       { FindVarTest(t1,t2) } 
+  | MAKECONS LPAREN t1 = evalExp COMMA t2 = evalExp COMMA t3 = evalExp COMMA t4 = evalExp RPAREN
+	  { MakeCons(t1,t2,t3,t4) } 
+  | INDUCTIVEARGS LPAREN t1 = evalExp COMMA t2 = evalExp RPAREN
+	  { InductiveArgs(t1, t2) }
+  | ISLABEL LPAREN t = evalExp RPAREN
+      { IsLabel t } 
+  | IRRELEVANT LPAREN t = evalExp RPAREN
+      { Irrelevant t } 
   | t = evalExp DOT field = VAR LEFTSQUARE predname = VAR RIGHTSQUARE  
       { Dot(t, field, predname) }
   | t1 = evalExp ORTERM t2 = evalExp 
@@ -284,12 +305,22 @@ proof:
     { NoOp }
   | SKIP
     { Skip }
+  | UNDO
+    { Undo }
+  | DONOTGENERATE
+	{ DoNotGenerateThisProof }
+  | UNFOLD
+    { Unfold }
   | SPLIT
     { Split }
   | name1 = lnp_name COLON CASE name2 = lnp_name 
     { Case(name1, name2) }
   | name1 = lnp_name COLON INDUCTION ON name2 = lnp_name 
     { Induction(name1, name2) }
+  | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var1 = NAME EQUAL var2 = NAME DOT { [(var1,Var(var2))] } )
+     { Apply(name1, name2, names, equalities) }
+  | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var1 = NAME EQUAL var2 = NAME COMMA var3 = NAME EQUAL var4 = NAME DOT { [(var1,Var(var2)) ; (var3,Var(var4))] } )
+      { Apply(name1, name2, names, equalities) }
   | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var = VAR EQUAL e = evalExp DOT { [(var,e)] } )
       { Apply(name1, name2, names, equalities) }
   | BACKCHAIN ON name = lnp_name 

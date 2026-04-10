@@ -12,6 +12,15 @@ open Substitution
 *)
 let unusedVar = "_unused_"
 
+(* remove_DoNotGenerateTheorems: returns FALSE if there is a doNotGenerateThisTheorem in the proof *)
+let rec remove_DoNotGenerateTheorems (schema : schema) : bool = match schema with ForEachThm(option, name, f, proof) -> 
+	begin match proof with 
+	| DoNotGenerateThisProof -> false
+	| Seq(DoNotGenerateThisProof, restOfProof) -> false
+	| Seq(_, restOfProof) -> remove_DoNotGenerateTheorems (ForEachThm(option, name, f, restOfProof))
+	| _ -> true 
+	end
+
 let rec langConstructor_to_LNPConstructor (termFromLanguage : term) : evaluatedExpression = match termFromLanguage with 
 	| Constr(cname, ts) -> Constructor(cname, List.map langConstructor_to_LNPConstructor ts) 
 	| LangVar(var) -> Var(var)
@@ -75,6 +84,7 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 							| Term(Constructor(cname1, _)), Term(Constructor(cname2, _)) -> Boolean (cname1 = cname2)
 							| Number(n1), Number(n2) -> Boolean (n1 = n2) 
 							| Term(Var(var1)), Term(Var(var2)) -> Boolean (var_and_names_equality var1 var2) (* let _ = print_string("equalTerms between two vars : " ^ var1 ^ "=AND=" ^ var2 ^ " and " ^ string_of_bool (var_and_names_equality var1 var2) ^ "\n") in  *)
+							| ListOfTerms l1, ListOfTerms l2 -> Boolean (l1 = l2) 
 							| _ -> Boolean false )
 	| OrTerm(t1, t2) -> Boolean (eval_getBoolean (eval lan t1) || eval_getBoolean (eval lan t2))
 	| AndTerm(t1, t2) -> Boolean (eval_getBoolean (eval lan t1) && eval_getBoolean (eval lan t2))
@@ -136,6 +146,7 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 										| "add", "mapName" -> Term (List.nth es 1)
 										| "add", "inputMap" -> Term (List.nth es 3)
 										| "add", "outputMap" -> Term (List.nth es 0)
+										| "add", "otherMap" -> Term (Var "R")
 										| "update", "op" -> Number 0
 										| "updateStrong", "op" -> Number 1
 										| "add", "op" -> Number 2
@@ -193,15 +204,30 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 	| RefOf(t1, t2) -> begin match (eval lan t1) with
 		| Term (Var statevar) -> Term (Constructor( "ref" ^ statevar , [t2]))
 		end
-	| Prime(t) -> begin match eval lan t with Term(t1) -> Term(prime_a_variable t1) | ListOfTerms(l) -> Term (Constructor("", (List.map prime_a_variable l))) end (* ListOfTerms (List.map prime_a_variable l) *)
+	| Prime(t, t2opt, b) -> begin match eval lan t with 
+		| Term(t1) -> Term(prime_a_variable t1) 												    
+		(* below: If b is true then EXCEPT: identity on the one you found, prime_a_var on the other. If b is false then ONLY: prime_a_var on the one you found, identity on the other *)
+		| ListOfTerms(l) -> if is_some t2opt then let (Term t2) = eval lan (get t2opt) in let f1,f2 = if b then ((fun x -> x), prime_a_variable) else (prime_a_variable, (fun x -> x)) in 
+											 Term (Constructor("", (List.map (fun a -> if a = t2 then f1 a else f2 a) l))) 
+							else Term (Constructor("", (List.map prime_a_variable l)))
+		end (* ListOfTerms (List.map prime_a_variable l) *)
 	| MapNewEntry(t1,t2) -> 
 			begin match (eval_getTerm (eval lan t1), eval_getTerm (eval lan t2)) with LNPRule(premises, concl), Var envVar -> 
 			let premisesReversed = List.rev premises in (* reverse so that the scan below catches the last that matches from the end just by looking at the first *)
-			let rec search_for_env_in_terms l = if l = [] then Term(Var envVar) else if List.exists (my_starts_with envVar) (term_getVars (List.hd l)) then Term (List.hd l) else search_for_env_in_terms (List.tl l) in 
+			let rec search_for_env_in_terms l = 
+				let answer = 
+				if l = [] then Term(Var envVar) else if List.exists (my_starts_with envVar) (term_getVars (List.hd l)) then Term (List.hd l) else search_for_env_in_terms (List.tl l) 
+				in 
+(*				let _ = print_string ("search_for_env_in_terms: " ^ dump answer) in *)
+				answer
+			in 
 			let extract_env (Constructor(_,ts)) = search_for_env_in_terms ts in 
 			let rec search_for_env_in_prems l = if l = [] then Term(Var envVar) else 
 				match true_formula_getPredname (List.hd premisesReversed) with 
-				| "subtype" when List.exists (my_starts_with envVar) (formula_getVars (List.hd premisesReversed)) -> extract_env (List.nth (true_formula_getArguments (List.hd premisesReversed)) 1)
+				| "subtype" when List.exists (my_starts_with envVar) (formula_getVars (List.hd premisesReversed)) -> 
+					let answer = extract_env (List.nth (true_formula_getArguments (List.hd premisesReversed)) 1) in 
+(*					let _ = print_string ("extracted from subtype info: " ^ dump answer) in *)
+					answer
 				| predname when (my_starts_with "updateStrong" predname) && input_is_about_state envVar (List.nth (true_formula_getArguments (List.hd premisesReversed)) 0) -> 
 					let varName = var_getVarName (List.nth (true_formula_getArguments (List.hd premisesReversed)) 0) in 
 						Term (Var ("Env" ^ varName))
@@ -227,8 +253,18 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 					end
 *)					
 
-	| FindVarTest(t1,t2) -> match eval lan (FindVar(t1, t2)) with | Term(_) -> Boolean false | _  -> Boolean true
-	
+	| FindVarTest(t1,t2) -> begin match eval lan (FindVar(t1, t2)) with | Term(_) -> Boolean false | _  -> Boolean true end
+	(* At the moment, it is fixed that you make a new cons with L T Rest *)
+	(* old: Term(Constructor("cons" ^ var, [eval_getTerm (eval lan t2) ; eval_getTerm (eval lan t3) ; eval_getTerm (eval lan t4)] *)
+	| MakeCons(t1, t2, t3, t4) -> begin match (eval lan t1) with Term (Var var) -> Term(Constructor("cons" ^ var, [Var "L" ; Var "T" ; Var "Rest"])) end
+	| InductiveArgs(t1, t2) -> 
+								let ajdust_by_ignoring_type_annotations l = if not(l = []) && List.hd l = Num(-1) then List.map (fun (Num(x)) -> Num(x - 1)) l else l in 
+								ListOfTerms( 
+									(List.filter (fun (Num a) -> a > -1) (ajdust_by_ignoring_type_annotations (List.mapi (fun i (Var metavar) -> if metavar.[0] = 'E' then Num i else if (metavar.[0] = 'T' || (is_environment_metavar metavar)) then Num(-1) else Num(-100)) (Lnp.term_getArguments (eval_getTerm (eval lan t1))))))
+								)
+	| IsLabel(t) -> begin match eval lan t with Term(Var(metavar)) -> if metavar.[0] = 'L' then Boolean(true) else Boolean(false) end
+	| Irrelevant(t) -> begin match eval lan t, eval lan (States(false)) with  Term(Var("H")), ListOfTerms(l) when List.length l > 1 -> Boolean(true) | _ -> Boolean(false) end
+		
 	let compile_lnp_name lan lnp_name = match lnp_name with 
 	| SuffixedString(str, evaluatedExpression) -> let suffix = begin match eval lan evaluatedExpression with 
 														| Term((Constructor(cname, [Var var]))) when my_starts_with "label" cname -> var
@@ -273,9 +309,10 @@ let rec compile_formula lan formula = match formula with
 	| FormulaTHM(lnp_name, lnp_predname, ts) -> let compiledArgs = List.concat (List.map eval_createListFromTermAndListOfTerm (List.map (eval lan) ts)) in 
 		FormulaTHM(compile_lnp_name lan lnp_name, lnp_name_adjust_name (compile_lnp_name lan lnp_predname), compiledArgs)
 
+		(* if the equality is something like env=[...] with a list such as EnvH envR etc.. then the new equalities are EnvH=EnvH, EnvR=EnvR  *)
 let compile_one_equality lan (var, e) : (string * evaluatedExpression) list = match eval lan e with 
 | Term(t) -> [(var, t)]
-| ListOfTerms l -> List.map (fun (Var var2) -> var ^ var2, (Var var2)) l 
+| ListOfTerms l -> List.map (fun (Var var2) -> (var2, Var var2)) l 
 	
 
 let rec compile_proof lan names proof = match proof with 
@@ -283,10 +320,16 @@ let rec compile_proof lan names proof = match proof with
 | Search -> Search
 | NoOp -> NoOp
 | Skip -> Skip
+| DoNotGenerateThisProof -> DoNotGenerateThisProof
+| Undo -> Undo
+| Unfold -> Unfold
 | Case(lnp_name1, lnp_name2) -> Case(compile_lnp_name lan lnp_name1, compile_lnp_name lan lnp_name2)
 | Induction(lnp_name1, lnp_name2) -> Induction(compile_lnp_name lan lnp_name1,compile_lnp_name lan lnp_name2)
 | Apply(lnp_name1, lnp_name2, lnp_names, equalities) -> let newEqualities = if is_none equalities then None else Some (List.concat (List.map (compile_one_equality lan) (get equalities))) in Apply(compile_lnp_name lan lnp_name1, compile_lnp_name lan lnp_name2, List.map (compile_lnp_name lan) lnp_names, newEqualities)
-| Backchain(lnp_name) -> Backchain(compile_lnp_name lan lnp_name)
+| Backchain(lnp_name) -> begin match lnp_name with 
+	| SuffixedString(str, evaluatedExpression) ->  begin match eval lan evaluatedExpression with ListOfTerms l -> Backchain(compile_lnp_name lan (SuffixedString(str, (List.hd l)))) | _ -> Backchain(compile_lnp_name lan lnp_name) end 
+	| _ -> Backchain(compile_lnp_name lan lnp_name)
+	end
 | If(t, proof1, proof2) -> if eval_getBoolean (eval lan t) then compile_proof lan names proof1 else compile_proof lan names proof2
 | ForEachProof(var, t, proof) -> makeSeq (List.map (compile_proof lan names) (List.map (substitution_proof proof var) (eval_getListOfTerms (eval lan t))))
 | Seq(proof1, proof2) -> if compile_proof lan names proof1 = NoOp then compile_proof lan names proof2 else Seq(compile_proof lan names proof1, compile_proof lan names proof2)
@@ -305,7 +348,7 @@ let compile lan schema : schema list =
 		if is_none (schema_getIteration schema) then (unusedVar, [Var "Just one element list"]) (* This is an ineffectul substitution, will create ONE version of the theorem *)
 			else let (var, t) =  get (schema_getIteration schema) in (var, (eval_getListOfTerms (eval lan t)))
 														(* substitution_schema also removes the Iteration part of the theorem (for each ...)  *)
-		in List.map (compileInstantiated lan) (List.map (substitution_schema schema var) substList)
+		in List.filter remove_DoNotGenerateTheorems (List.map (compileInstantiated lan) (List.map (substitution_schema schema var) substList))
 	
 	
 

@@ -60,6 +60,8 @@ let rec abella_proof names proof = match proof with
 	| Search -> "search" ^ ". "
 	| NoOp -> "" (* NoOp are ignored *)
 	| Skip -> "skip"  ^ ". "
+	| Undo -> "undo"  ^ ". "
+	| Unfold -> "unfold"  ^ ". "
 	(* If the name of new hypothesis is not given, then just prints "case Hyp" rather than Hyp1: case Hyp2  *)
 	| Case(lnp_name1, lnp_name2) -> 
 		let plainInstr = "case " ^ abella_lnp_name lnp_name2 ^ "(keep). "in 

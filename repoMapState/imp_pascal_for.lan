@@ -1,0 +1,33 @@
+Heap H ::= [L |-> E]
+Type T ::= (int) | (bool) | (refH T) | (unitT) | (list T)
+Expression E ::= x | (num N)  | (tt) | (ff) | (nilL) | (consL E E) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (pascal_for E E E E) | (seq E E) | (labelH L) | (unit) 
+Value V ::=  (num N)  | (tt) | (ff) | (unit)  | (labelH L)
+Error ::=
+Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (seq C e) 
+Relation R ::= (step E H E H)
+.
+Gamma ; EnvH |- (num N) : (int). 
+Gamma ; EnvH |- (tt) : (bool). 
+Gamma ; EnvH |- (ff) : (bool). 
+Gamma ; EnvH |- (nilL) : (list T). 
+Gamma ; EnvH |- (consL E1 E2) : (list T) <== Gamma ; EnvH |- E1 : T /\ Gamma ; EnvH |- E2 : (list T).
+Gamma ; EnvH |- (plus E1 E2) : (int) <== Gamma ; EnvH |- E1 : (int) /\ Gamma ; EnvH |- E2 : (int).
+Gamma ; EnvH |- (equal E1 E2) : (bool) <== Gamma ; EnvH |- E1 : (int) /\ Gamma ; EnvH |- E2 : (int).
+Gamma ; EnvH |- (deref E): T <== Gamma ; EnvH |- E : (refH T).
+Gamma ; EnvH |- (assign E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (refH T) /\ Gamma ; EnvH |- E2: T.
+Gamma ; EnvH |- (if E1 E2 E3): (unitT) <== Gamma ; EnvH |- E1 : (bool) /\ Gamma ; EnvH |- E2: (unitT) /\ Gamma ; EnvH |- E3: (unitT).
+Gamma ; EnvH |- (pascal_for E1 E2 E3 E4) : (unitT) <== Gamma ; EnvH |- E1 : (refH (int)) /\ Gamma ; EnvH |- E2 : (int) /\ Gamma ; EnvH |- E3 : (int) /\ Gamma ; EnvH |- E4 : (unitT).
+Gamma ; EnvH |- (seq E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (unitT) /\ Gamma ; EnvH |- E2: (unitT).
+Gamma ; EnvH |- (labelH L) : (refH T) <== T <- HT@H(L).
+Gamma ; EnvH |- (unit ) : (unitT ).
+
+
+(plus V1 V2); H --> V3; H <== user-defined (addition V1 V2 V3) /\ value V1 /\ value V2 /\ value V3. 
+(equal V1 V2); H --> V3; H <== user-defined (equality V1 V2 V3) /\ value V1 /\ value V2 /\ value V3. 
+(deref (labelH L)); H --> V; H <== V <- H@H(L).
+(assign (labelH L) V); H --> (unit); H' <== H'@H <- H[L|->V].
+(if (tt) E1 E2); H --> E1; H. 
+(if (ff) E1 E2); H --> E2; H. 
+(pascal_for (labelH L) (num N1) (num N2) E); H -->  (if (equal (deref (labelH L)) (num N2)) (unit) (seq E (seq (assign (labelH L) (plus (num N1) (num N1))) (pascal_for (labelH L) (num N1) (num N2) E)))) ; H. 
+(seq (unit) E2); H --> E2; H. 
+

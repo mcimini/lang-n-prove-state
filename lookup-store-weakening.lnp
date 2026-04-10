@@ -1,11 +1,11 @@
-for each s in states,
-    Theorem Lookup-store-weakening:
+for each s in weakstates,
+    Theorem Lookup-store-weakening-_(s): 
         forall*,
-        (_ : subsetEnvH env env') ->
-        (_ : lookupEnvH env l t) ->
-        (_ : lookupEnvH env' l t).
+        (Main : =SubsetEnv_(s)= env env') ->
+        (Lookup : =LookupEnv_(s)= env l t) ->
+        (_ : =LookupEnv_(s)= env' l t).
 Proof.
-_ : induction on H1.
+Subset : induction on Main.
     search.
-_ : apply IH0 to H3 H2.
+_ : apply IH0 to Subset Lookup.
     search

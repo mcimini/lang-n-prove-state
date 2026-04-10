@@ -1,0 +1,79 @@
+Heap H ::= [L |-> E]
+RegisterFile R ::= [Z |-> E] strong
+Register Z ::= (r1) | (r2) 
+Type T ::= (int) | (refH T) | (unitT) | (codeT NvrR)
+Expression E ::= x | (zero) | (one) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (jmp E) | (bnz Z E E) | (code NvrR E) | (faa Z E E E) | (labelH L) 
+Value V ::= (halt) | (zero) | (one) | (labelH L) 
+Relation R ::= (step E H R E H R)
+Error ::=
+Context C ::= [] | 
+.
+Gamma ; EnvH ; EnvR |- (zero) : (int). 
+Gamma ; EnvH ; EnvR |- (one) : (int). 
+Gamma ; EnvH ; EnvR |- (halt) : (unitT). 
+Gamma ; EnvH ; EnvR |- (add Zd Zs E1 E2) : (unitT) <== Gamma ; EnvR |- Zs : (int) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->(int)].
+Gamma ; EnvH ; EnvR |- (mult Zd Zs E1 E2) : (unitT) <== Gamma ; EnvR |- Zs : (int) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->(int)].
+Gamma ; EnvH ; EnvR |- (load Zd Zs E) : (unitT) <== Gamma ; EnvR |- Zd : SomeT /\ Gamma ; EnvR |- Zs : (refH T) /\ Gamma ; EnvH ; EnvR' |- E : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->T].
+Gamma ; EnvH ; EnvR |- (malloc Zd E1 E2) : (unitT) <== Gamma ; EnvR |- Zd : SomeT /\ Gamma ; EnvH ; EnvR |- E1 : T /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->T].
+Gamma ; EnvH ; EnvR |- (move Zd E1 E2) : (unitT) <== Gamma ; EnvR |- Zd : SomeT /\ Gamma ; EnvH ; EnvR |- E1 : T /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR'@EnvR <- EnvR[Zd|->T].
+Gamma ; EnvH ; EnvR |- (store Zd Zs E) : (unitT) <== Gamma ; EnvR |- Zd : (refH T) /\ Gamma ; EnvR |- Zs : T /\ Gamma ; EnvH ; EnvR |- E : (unitT).
+Gamma ; EnvH ; EnvR |- (jmp E) : (unitT) <== Gamma ; EnvH ; EnvR |- E : (refH (codeT EnvR)). 
+Gamma ; EnvH ; EnvR |- (bnz Zs E1 E2) : (unitT) <== Gamma ; EnvR |- Zs : (int) /\ Gamma ; EnvH ; EnvR |- E1 : (refH (codeT EnvR)) /\ Gamma ; EnvH ; EnvR |- E2 : (unitT).
+Gamma ; EnvH ; EnvR |- (code EnvR' E) : (codeT EnvR') <== Gamma ; EnvH ; EnvR' |- E : (unitT). 
+
+Gamma ; EnvH ; EnvR |- (faa Zd E1 E2 E3) : (unitT) <== 
+	Gamma ; EnvR |- Zd : (int) 
+	/\ Gamma ; EnvH ; EnvR |- E1 : (refH (int)) 
+	/\ Gamma ; EnvH ; EnvR |- E2 : (int)
+	/\ Gamma ; EnvH ; EnvR' |- E3 : (unitT)
+	/\ EnvR'@EnvR <- EnvR[Zd|->(int)].
+
+
+Gamma ; EnvH ; EnvR |- (labelH L) : (refH T) <== T <- HT@H(L).
+
+
+(add Zd Zs V1 E); H ; R --> E; H ; R' <== 
+	V2 <- R@R(Zs) /\
+	user-defined (addition V1 V2 V3) /\
+	R'@R,4 <- R[Zd|->V3].
+
+(mult Zd Zs V1 E); H ; R --> E; H ; R' <== 
+	V2 <- R@R(Zs) /\
+	user-defined (multiplication V1 V2 V3) /\
+	R'@R,4 <- R[Zd|->V3].
+
+(load Zd Zs E); H ; R --> E; H ; R' <== 
+	(labelH L) <- R@R(Zs) /\
+	V <- H@H(L) /\
+	R'@R,3 <- R[Zd|->V].
+
+(malloc Zd V E); H ; R --> E; H' ; R' <== 
+	H'@H, LNewH <- H + V /\ 
+	R'@R,3 <- R[Zd|-> (labelH LNewH)] /\
+	H' <: (env (labelH LNewH) (refH T) (consEnvH LNewH T EnvH) EnvR') /\
+	R' <: (env (labelH LNewH) (refH T) (consEnvH LNewH T EnvH) EnvR').
+	
+(move Zd V E); H ; R --> E; H ; R' <== 
+	R'@R,3 <- R[Zd|->V].
+
+(store Zd Zs E); H ; R --> E; H' ; R <== 
+	(labelH L) <- R@R(Zd) /\
+	V <- R@R(Zs) /\
+	H'@H <- H[L|->V].
+
+(jmp (labelH L)); H ; R --> E; H ; R <== 
+	(code EnvR E) <- H@H(L).
+
+(bnz Zs (labelH L) E2); H ; R --> E1; H ; R <== 
+	(zero) <- R@R(Zs) /\
+	(code EnvR E1) <- H@H(L).
+	
+(bnz Zs (labelH L) E); H ; R --> E; H ; R <== 
+	(one) <- R@R(Zs).
+
+(faa Zd (labelH L) V2 E); H ; R --> E; H' ; R' <== 
+	V1 <- H@H(L) /\
+	user-defined (addition V1 V2 V3) /\
+	H'@H <- H[L|->V3] /\
+	R'@R,4 <- R[Zd|->V1].
+

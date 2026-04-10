@@ -71,7 +71,7 @@ language :
  
 term :  
   | LEFTPAR opname = VARLEX ts = list(term) RIGHTPAR	
-    { Constr(opname, ts) } 
+  { if opname = "num" then Constr("num", []) else Constr(opname, ts) }  
   | VARX
     { BoundVar }
   | VARBIGX

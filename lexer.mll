@@ -82,6 +82,8 @@ rule token = parse
   | "endIMPLY"               { ENDIMPLY }
   | "endif"               { ENDIF }
   | "skip"               { SKIP }
+  | "undo"               { UNDO }
+  | "doNotGenerateThisProof" {DONOTGENERATE}
   | "true"               { TRUE }
   (* reimplemented some for subtyping *)
   | "forall*"               { FORALLSTAR }
@@ -114,7 +116,14 @@ rule token = parse
   | "findVarTest"               { FINDVARTEST } 
   | "assert"               { ASSERT } 
   | "clear"               { CLEAR } 
+  | "unfold"               { UNFOLD } 
   | "let"               { LET } 
+  | "makeCons"               { MAKECONS } 
+  | "inductiveArgs"     { INDUCTIVEARGS }   
+  | "isLabel"     { ISLABEL }   
+  | "irrelevant"     { IRRELEVANT }   
+  | "only"     { ONLY }   
+  | "except"     { EXCEPT }   
   | var             { VAR (Lexing.lexeme lexbuf) }
   | name             { NAME (Lexing.lexeme lexbuf) }
   | ['0'-'9']+ as i { INT (int_of_string i) }  
