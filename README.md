@@ -10,7 +10,7 @@ Requirements:
 <li> To test the output of Lang-n-Prove: the <a href="http://abella-prover.org">Abella proof assistant</a> is required.  
 </ul>
 
-To install dependencies in their own Opam switch with this command:
+To install dependencies:
 ```
 opam switch import dependencies.txt --switch lnp && eval $(opam env)
 ```
