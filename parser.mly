@@ -115,7 +115,7 @@
 %token UNFOLD
 %token IRRELEVANT
 %token DONOTGENERATE
-
+%token NAMECONVENTION
 
 %token EOF
 
@@ -245,8 +245,8 @@ evalExp:
       { IsLabel t } 
   | IRRELEVANT LPAREN t = evalExp RPAREN
       { Irrelevant t } 
-  | t = evalExp DOT field = VAR LEFTSQUARE predname = VAR RIGHTSQUARE  
-      { Dot(t, field, predname) }
+  | t = evalExp DOT field = VAR predname = option(LEFTSQUARE predname = VAR RIGHTSQUARE {predname} )
+      { if Option.is_some predname then Dot(t, field, Option.get predname) else Dot(t, field, "none") }
   | t1 = evalExp ORTERM t2 = evalExp 
       { OrTerm(t1,t2) }
   | t1 = evalExp ANDTERM t2 = evalExp 
@@ -319,9 +319,13 @@ proof:
     { Induction(name1, name2) }
   | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var1 = NAME EQUAL var2 = NAME DOT { [(var1,Var(var2))] } )
      { Apply(name1, name2, names, equalities) }
-  | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var1 = NAME EQUAL var2 = NAME COMMA var3 = NAME EQUAL var4 = NAME DOT { [(var1,Var(var2)) ; (var3,Var(var4))] } )
-      { Apply(name1, name2, names, equalities) }
+  | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var1 = VAR EQUAL e1 = evalExp COMMA var2 = VAR EQUAL e2 = evalExp DOT { if var1 = var2 then [(var1,e1)] else [(var1,e1) ; (var2,e2)] } )
+      { Seq(Seq(Apply(String "Temporary", name2, names, equalities), Seq(Clear name1, Apply(name1, String "Temporary", [], None))), Clear(String "Temporary")) }
+  | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var1 = NAME EQUAL e1 = evalExp COMMA var2 = NAME EQUAL e2 = evalExp DOT { if var1 = var2 then [(var1,e1)] else [(var1,e1) ; (var2,e2)] } )
+	  { Seq(Seq(Apply(String "Temporary", name2, names, equalities), Seq(Clear name1, Apply(name1, String "Temporary", [], None))), Clear(String "Temporary")) }
   | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var = VAR EQUAL e = evalExp DOT { [(var,e)] } )
+      { Apply(name1, name2, names, equalities) }
+  | name1 = lnp_name COLON APPLY name2 = lnp_name TO names = list(lnp_name) equalities = option(WITH var = NAME EQUAL e = evalExp DOT { [(var,e)] } )
       { Apply(name1, name2, names, equalities) }
   | BACKCHAIN ON name = lnp_name 
       { Backchain(name) }
@@ -337,6 +341,8 @@ proof:
       { ForEachProof(var, t, p) }
   | LET hyp = NAME EQUAL t = evalExp COLON name1 = lnp_name COLON name2 = lnp_name IN p = proof
       { Let(hyp,t,name1,name2,p) } 
+  | NAMECONVENTION LPAREN t = evalExp COMMA name1 = lnp_name COMMA name2 = lnp_name RPAREN
+      { NameConvention(t,name1,name2) } 
   | p1 = proof DOT p2 = proof
       { Seq(p1, p2) }
 

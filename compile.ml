@@ -114,6 +114,7 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 									| Constructor(cname, _), "nominalState" -> eval lan (Dot(get_nominal_env_name subject,field,predname)) (* assumption, always called with consEnvH and cuts the first 4 characters to get EnvH. get_nominal_env_name always returns Var *) 
 									| Var(var), "nominalState" ->  Term(Var(String.make 1 (last_character (trim_numbers var)))) 
 									| Var(var), "otherEnvs" -> ListOfTerms (List.map (fun t -> eval_getTerm (eval lan (StateEnv(t)))) (list_difference (eval_getListOfTerms (eval lan (States(false)))) [Var(var)]))
+									| Var(var), "otherStates" -> ListOfTerms (list_difference (eval_getListOfTerms (eval lan (States(false)))) [Var(var)])
 									| LNPRule(premises, _), "premises" -> let premisesLang = List.map lnp_LNPFormulaTolangFormula premises in 
 																		  let premisesLangWithIdx : evaluatedExpression list = (List.mapi lnp_langFormulaToLNPExpression premisesLang) in 
 																		  let premisesToGiveOut : evaluatedExpression list = (lnp_getOnlyPremisesOfPredname premisesLangWithIdx predname) in 
@@ -130,29 +131,62 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 										| "step", "targetExp" ->  Term (List.nth es ((List.length es) / 2)) (* first half is source exp + state. *)
 										| "lookup", "output" -> Term (List.nth es 0)
 										| "lookup", "label" -> Term (List.nth es 3)
-										| "lookup", "mapName" -> Term (List.nth es 2)
+										| "lookup", "key" -> Term (List.nth es 3)
+										| "lookup", "state" -> Term (List.nth es 2)
 										| "update", "label" -> Term (List.nth es 3)
 										| "update", "inserted" -> Term (List.nth es 4)   (* when update and updateStrong where both update: if List.length es = 6 then Term (List.nth es 5) else Term (List.nth es 4) *)
 										| "update", "mapName" -> Term (List.nth es 1)
+										| "update", "state" -> Term (List.nth es 1)
 										| "update", "inputMap" -> Term (List.nth es 2)
+										| "update", "inputState" -> Term (List.nth es 2)
 										| "update", "outputMap" -> Term (List.nth es 0)
+										| "update", "output" -> Term (List.nth es 0)
+										| "update", "mainInput" -> Term (List.nth es 3)
+										| "update", "key" -> Term (List.nth es 3)
+										| "update", "newEnv" -> let Var(outputState) = List.nth es 0 in ListOfTerms[Var("Env" ^ outputState)]
+										| "update", "weakupdate" -> Boolean(true)
+										| "update", "strongupdate" -> Boolean(false)
+										(*
+										| "update", "weakupdate" -> eval lan (InList((List.nth es 1),States(true))
+										| "update", "strongupdate" -> eval lan (NotTerm(InList((List.nth es 1),States(true)))
+											*)
+										| "updateStrong", "mainInput" -> Term (List.nth es 3)
+										| "updateStrong", "key" -> Term (List.nth es 3)
 										| "updateStrong", "inserted" -> Term (List.nth es 4)   (* when update and updateStrong where both update: if List.length es = 6 then Term (List.nth es 5) else Term (List.nth es 4) *)
 										| "updateStrong", "mapName" -> Term (List.nth es 1)
+										| "updateStrong", "state" -> Term (List.nth es 1)
 										| "updateStrong", "inputMap" -> Term (List.nth es 2)
+										| "updateStrong", "inputState" -> Term (List.nth es 2)
 										| "updateStrong", "outputMap" -> Term (List.nth es 0)
-										| "updateStrong", "envPremise" -> Term (List.nth es 5)
-										| "add", "expToInsert" -> Term (List.nth es 4)
-										| "add", "newLabel" -> Term (List.nth es 2)
-										| "add", "mapName" -> Term (List.nth es 1)
-										| "add", "inputMap" -> Term (List.nth es 3)
-										| "add", "outputMap" -> Term (List.nth es 0)
-										| "add", "otherMap" -> Term (Var "R")
-										| "update", "op" -> Number 0
+										| "updateStrong", "output" -> Term (List.nth es 0)
+										| "updateStrong", "envPremise" -> let operatorName = predname in (*predname = e and in the meantime it has been replaced by malloc, load, etc.*) 
+																		  let typingRuleOfOp = lang_retrieveTHERule_by_predname_opname lan "typeOf" operatorName in 
+																		  (* return the index of the last premise, where the env update premise is. *)
+																		  Term (Var (string_of_int (List.length (rule_getPremises typingRuleOfOp) - 1))) (* suffix of lnp_names works better with strings *)
+										| "updateStrong", "newEnv" -> let Var(outputState) = List.nth es 0 in ListOfTerms[Var("Env" ^ outputState)]
 										| "updateStrong", "op" -> Number 1
-										| "add", "op" -> Number 2
-										| "update", "mainInput" -> Term (List.nth es 3)
-										| "updateStrong", "mainInput" -> Term (List.nth es 3)
-										| "add", "mainInput" -> Term (List.nth es 4)
+										| "updateStrong", "weakupdate" -> Boolean(false)
+										| "updateStrong", "strongupdate" -> Boolean(true)
+										| "extend", "expToInsert" -> Term (List.nth es 4)
+										| "extend", "newLabel" -> if predname = "toTerm" then Term (Constructor ("labelH", [List.nth es 2])) else Term (List.nth es 2)
+										| "extend", "mapName" -> Term (List.nth es 1)
+										| "extend", "state" -> Term (List.nth es 1)
+										| "extend", "inputMap" -> Term (List.nth es 3)
+										| "extend", "inputState" -> Term (List.nth es 3)
+										| "extend", "outputMap" -> Term (List.nth es 0)
+										| "extend", "output" -> Term (List.nth es 0)
+										| "extend", "otherMap" -> Term (Var "R")
+										| "extend", "otherStates" -> ListOfTerms [Var "R"] (*  Term (Var "R") *)
+										| "update", "op" -> Number 0
+										| "extend", "op" -> Number 2
+										| "extend", "mainInput" -> Term (List.nth es 4)
+										| "extend", "inserted" -> Term (List.nth es 4)
+										| "extend", "type" -> if List.length es = 5 then Term (Constructor("refH", [Var "T"])) else Term (List.nth es 5)
+										| "extend", "envs" -> if List.length es = 5 
+																 then if predname = "malloc" then ListOfTerms ([Constructor ("consEnvH", [List.nth es 2; Var "T"; Var "EnvH"]) ;  Var "EnvR"]) else Term (Constructor ("consEnvH", [List.nth es 2; Var "T"; Var "EnvH"])) 
+															  else ListOfTerms (List.drop 6 es)
+										| "extend", "weakupdate" -> Boolean(false)
+										| "extend", "strongupdate" -> Boolean(false)
 										| "subtype", "envs" -> begin match es with [_ ; info] -> 
 											let argsOfEnvConstructor =  if info_getVarsAffected (Lnp.term_getArguments info) = [] then (Lnp.term_getArguments info) else List.rev (List.tl (List.rev (Lnp.term_getArguments info))) in  (* without the last, which is the varAffected *)
 												ListOfTerms (List.tl (List.tl argsOfEnvConstructor)) end (* after the first two you have the envs *)
@@ -211,29 +245,35 @@ let rec eval lan evaluatedExpression : eval_result = match evaluatedExpression w
 											 Term (Constructor("", (List.map (fun a -> if a = t2 then f1 a else f2 a) l))) 
 							else Term (Constructor("", (List.map prime_a_variable l)))
 		end (* ListOfTerms (List.map prime_a_variable l) *)
-	| MapNewEntry(t1,t2) -> 
-			begin match (eval_getTerm (eval lan t1), eval_getTerm (eval lan t2)) with LNPRule(premises, concl), Var envVar -> 
+	| MapNewEntry(t1,t2) -> (* the new name in .lnp syntax is newStateEnv *)
+			begin match (eval_getTerm (eval lan t1), eval_getTerm (eval lan t2)) with LNPRule(premises, concl), Var stateVar -> 
+			let rec search_for_env_in_envs stateVar envs = let envVar = "Env" ^ stateVar in if envs = [] then Var envVar else if List.exists (my_starts_with envVar) (term_getVars (List.hd envs)) then (List.hd envs) else search_for_env_in_envs stateVar (List.tl envs) in 
 			let premisesReversed = List.rev premises in (* reverse so that the scan below catches the last that matches from the end just by looking at the first *)
-			let rec search_for_env_in_terms l = 
-				let answer = 
-				if l = [] then Term(Var envVar) else if List.exists (my_starts_with envVar) (term_getVars (List.hd l)) then Term (List.hd l) else search_for_env_in_terms (List.tl l) 
-				in 
-(*				let _ = print_string ("search_for_env_in_terms: " ^ dump answer) in *)
-				answer
-			in 
-			let extract_env (Constructor(_,ts)) = search_for_env_in_terms ts in 
-			let rec search_for_env_in_prems l = if l = [] then Term(Var envVar) else 
-				match true_formula_getPredname (List.hd premisesReversed) with 
-				| "subtype" when List.exists (my_starts_with envVar) (formula_getVars (List.hd premisesReversed)) -> 
-					let answer = extract_env (List.nth (true_formula_getArguments (List.hd premisesReversed)) 1) in 
-(*					let _ = print_string ("extracted from subtype info: " ^ dump answer) in *)
-					answer
-				| predname when (my_starts_with "updateStrong" predname) && input_is_about_state envVar (List.nth (true_formula_getArguments (List.hd premisesReversed)) 0) -> 
-					let varName = var_getVarName (List.nth (true_formula_getArguments (List.hd premisesReversed)) 0) in 
+			let rec search_for_env_in_prems l = if l = [] then Term(Var ("Env" ^ stateVar)) else 
+				match true_formula_getPredname (List.hd l) with 
+				| "extend" -> 
+					let envs = if List.length (true_formula_getArguments (List.hd l)) = 5 then [Constructor("consEnvH", [Var ("LNew" ^ stateVar) ; Var "T" ; Var ("Env" ^ stateVar)])] else List.drop 5 (true_formula_getArguments (List.hd l)) in 
+					Term (search_for_env_in_envs stateVar envs)
+				| predname when (my_starts_with "updateStrong" predname) && input_is_about_state stateVar (List.nth (true_formula_getArguments (List.hd l)) 0) -> 
+					let varName = var_getVarName (List.nth (true_formula_getArguments (List.hd l)) 0) in 
 						Term (Var ("Env" ^ varName))
 				| _ -> search_for_env_in_prems (List.tl l) in 
 			search_for_env_in_prems premisesReversed 			
 			end
+(*						
+						Term(List.nth (true_formula_getArguments (List.hd l)) 6)
+					  
+					  
+				| "extend" when List.exists (my_starts_with stateVar) (formula_getVars (List.hd l)) -> 
+					  
+					let answer = extract_env (List.nth (true_formula_getArguments (List.hd premisesReversed)) 1) in 
+					answer
+				-- another comment let _ = print_string ("extracted from subtype info: " ^ dump answer) in 
+				| predname when (my_starts_with "updateStrong" predname) && input_is_about_state envVar (List.nth (true_formula_getArguments (List.hd l)) 0) -> 
+					let varName = var_getVarName (List.nth (true_formula_getArguments (List.hd l)) 0) in 
+						Term (Var ("TMPEnv" ^ varName))
+					
+					*)
 		(* old begin match eval_getTerm (eval lan t1), eval_getTerm (eval lan t2) with Var state, Var env -> Term(Constructor("consEnv" ^ (trim_numbers state), [Var ("LNew" ^ (trim_numbers state)); Var "T"; Var env])) end *)
 	| Can(t) -> begin match (eval lan t) with Term (Var var) -> Term (Var (trim_numbers var)) | ListOfTerms(l) -> ListOfTerms (List.map (fun a -> eval_getTerm (eval lan (Can(a)))) l) end 
 	| FindVar(t1,t2) -> (* at the moment FindVar does not return the correct index *)	
@@ -339,6 +379,8 @@ let rec compile_proof lan names proof = match proof with
 | Assert(f) -> Assert(compile_formula lan f)
 | Clear lnp_name -> Clear(compile_lnp_name lan lnp_name)
 | Let(hyp,t,lnp_name1,lnp_name2,p) -> let subst = if eval_getBoolean (eval lan t) then Var (lnp_name_getname (compile_lnp_name lan lnp_name1)) else Var (lnp_name_getname (compile_lnp_name lan lnp_name2)) in compile_proof lan names (substitution_proof p hyp subst)
+
+
 	
 let compileInstantiated lan schema = 
 	ForEachThm(None, compile_lnp_name lan (schema_getTheoremName schema), compile_formula lan (schema_getTheorem schema), compile_proof lan (map_names_formulae_in_theorem (schema_getTheorem schema)) (schema_getProof schema))

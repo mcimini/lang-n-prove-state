@@ -29,7 +29,7 @@ typeOf Gamma EnvH (assign E1 E2) (unitT) :-
     typeOf Gamma EnvH E1 (refH T),
     typeOf Gamma EnvH E2 T.
 
-typeOf Gamma EnvH (heap_app E1 E2) (refH T2) :-
+typeOf Gamma EnvH (heap_app E1 E2) T2 :-
     typeOf Gamma EnvH E1 (refH (arrow T1 T2)),
     typeOf Gamma EnvH E2 (refH T1).
 
@@ -42,7 +42,7 @@ step (ref V) MU1  (labelH LNewH) MU1'  :- addMapH MU1 V MU1' LNewH, value V.
 step (deref (labelH GET)) MU1  V MU1  :- lookupMapH MU1 GET V, value V. 
 step (assign (labelH GET) V) MU1  unit MU1'  :- updateMapH MU1 GET V MU1', value V.
 
-step (heap_app (labelH GET1) (labelH GET2)) MU1  (labelH LNewH) MU1'  :- lookupMapH MU1 GET1 V1, lookupMapH MU1 GET2 V2, addMapH MU1 (app V1 V2) MU1' LNewH. 
+step (heap_app (labelH GET1) (labelH GET2)) MU1  (app V1 V2) MU1  :- lookupMapH MU1 GET1 V1, lookupMapH MU1 GET2 V2. 
 
 
 value (abs E1 E2).

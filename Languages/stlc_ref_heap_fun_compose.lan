@@ -1,0 +1,32 @@
+State { Heap H }
+Type T ::= (arrow T T) | (refH T) | (unitT)
+Expression E ::= x | (abs T (x)E) | (app E E) | (ref E) | (deref E) | (assign E E) | (heap_fun_compose E E E) | (labelH L) | (unit) 
+Value V ::= (abs T R) | (labelH L) | (unit)
+Error ::=
+Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) 
+Relation R ::= (step E H E H)
+.
+Gamma ; EnvH |- (abs T1 R) : (arrow T1 T2) <== Gamma, x : T1 ; EnvH |- R : T2.
+Gamma ; EnvH |- (app E1 E2) : T2 <== Gamma ; EnvH |- E1 : (arrow T1 T2) /\ Gamma ; EnvH |- E2 : T1.
+Gamma ; EnvH |- (ref E): (refH T) <== Gamma ; EnvH |- E : T.
+Gamma ; EnvH |- (deref E): T <== Gamma ; EnvH |- E : (refH T).
+Gamma ; EnvH |- (assign E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (refH T) /\ Gamma ; EnvH |- E2: T.
+
+Gamma ; EnvH |- (heap_fun_compose E1 E2 E3): T3 <== Gamma ; EnvH |- E1 : (refH (arrow T1 T2)) /\ Gamma ; EnvH |- E1 : (refH (arrow T2 T3)) /\ Gamma ; EnvH |- E3: T3.
+
+
+Gamma ; EnvH |- (labelH L) : (refH T) <== T <- EnvH(L).
+Gamma ; EnvH |- (unit ) : (unitT ).
+
+
+(app (abs T R) V); H --> R[V/x]; H <== value V.
+(ref V); H --> (label LNewH); H' <== 
+	H', LNewH <- H + V.
+	
+(deref (label L)); H --> V; H <== V <- H(L).
+(assign (label L) V); H --> (unit); H' <== H' <- H[L|->V].
+
+(heap_fun_compose (label L1) (label L2) V); H --> (app V2 (app V1 V)) ; H <== 
+	V1 <- H(L1) /\
+	V2 <- H(L2). 
+

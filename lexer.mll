@@ -103,14 +103,14 @@ rule token = parse
   | "extendsMapState"               { EXTENDSTATE } 
   | "with"               { WITH } 
   | "states"               { STATES } 
-  | "weakstates"               { WEAKSTATES } 
+  | "extensibleStates"               { WEAKSTATES } 
   | "state_env"               { STATEENV } 
   | "map_env"               { MAPENV } 
   | "labelOf"               { LABELOF } 
   | "refOf"               { REFOF } 
   | "all_envs"            { ALLENVS }
   | "prime"               { PRIME } 
-  | "mapNewEntry"               { NEWENTRY } 
+  | "envAfterStep"               { NEWENTRY } 
   | "can"               { CAN } 
   | "findVar"               { FINDVAR } 
   | "findVarTest"               { FINDVARTEST } 
@@ -122,6 +122,7 @@ rule token = parse
   | "inductiveArgs"     { INDUCTIVEARGS }   
   | "isLabel"     { ISLABEL }   
   | "irrelevant"     { IRRELEVANT }   
+  | "caseWithNamingforVars"     { NAMECONVENTION }   
   | "only"     { ONLY }   
   | "except"     { EXCEPT }   
   | var             { VAR (Lexing.lexeme lexbuf) }

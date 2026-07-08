@@ -36,7 +36,7 @@ let rec substitution_evaluatedExpression evaluatedExpression var term = match ev
 | ExtendState(t1, t2) -> ExtendState(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | WhichArg(t1, t2) -> WhichArg(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
 | WhichArgTest(t1, t2) -> WhichArgTest(substitution_evaluatedExpression t1 var term, substitution_evaluatedExpression t2 var term)
-| Dot(t,field,predname) -> Dot(substitution_evaluatedExpression t var term, field, predname)
+| Dot(t,field,predname) -> let newpredname = if var = predname then term_getConstructorName term else predname in Dot(substitution_evaluatedExpression t var term, field, newpredname)
 (* rules and formulae come from the language, we do not substitute in there *)
 | LNPRule(premises,conclusion) -> LNPRule(premises,conclusion)
 | LNPFormula(formula, n) -> LNPFormula(formula, n) 
@@ -107,7 +107,14 @@ let rec substitution_proof proof var term = match proof with
 	| Assert t -> Assert(substitution_formula t var term)
 	| Clear lnp_name -> Clear(substitution_lnp_name lnp_name var term)
 	| Let(hyp,t,lnp_name1,lnp_name2,p) -> Let(hyp,substitution_evaluatedExpression t var term,substitution_lnp_name lnp_name1 var term, substitution_lnp_name lnp_name2 var term,substitution_proof p var term)
-
+	| NameConvention(t,lnp_name1,lnp_name2) ->    
+		let inputSchema = (open_in "naming.lnp") in
+		let filebuf = Lexing.from_channel inputSchema in
+		let schema = try (Parser.file Lexer.token filebuf) with
+	 						    | Lexer.Error msg -> raise(Failure("Lexer error for Naming.lnp"))
+	 						    | Parser.Error -> raise(Failure("Parser error for Naming.lnp")) in
+		let unusedVar = IO.close_in inputSchema; in substitution_proof (schema_getProof schema) var term
+		
 (* substitution_schema also removes the Iteration part of the theorem (for each ...)  *)
 let substitution_schema schema var term = ForEachThm(None, substitution_lnp_name (schema_getTheoremName schema) var term, substitution_formula (schema_getTheorem schema) var term, substitution_proof (schema_getProof schema) var term)
 

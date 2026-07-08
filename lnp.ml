@@ -51,7 +51,7 @@ and evaluatedExpression =
   | LabelOf of evaluatedExpression * evaluatedExpression
   | RefOf of evaluatedExpression * evaluatedExpression
   | Prime of evaluatedExpression * (evaluatedExpression option) * bool (* option says the term not to prime if ONLY is inserted. boolean says that EXCEPT has been inserted rather than ONLY. *)
-  | MapNewEntry of evaluatedExpression * evaluatedExpression
+  | MapNewEntry of evaluatedExpression * evaluatedExpression (* the new name in .lnp syntax is newStateEnv *)
   | Can of evaluatedExpression
   | FindVar of evaluatedExpression * evaluatedExpression
   | FindVarTest of evaluatedExpression * evaluatedExpression
@@ -105,6 +105,7 @@ type proof =
   | Assert of formula
   | Clear of lnp_name 
   | Let of name * evaluatedExpression * lnp_name * lnp_name * proof 
+  | NameConvention of evaluatedExpression * lnp_name * lnp_name 
 
 
 type schema = ForEachThm of ((var * evaluatedExpression) option) * lnp_name * formula * proof 
@@ -253,7 +254,7 @@ let true_formula_getPredname (Formula(lnp_name, predname, ts)) = predname
 
 let lnp_getOnlyPremisesOfPredname (premises : evaluatedExpression list) (predname : string) : evaluatedExpression list = 
 	if predname = "all" then premises else 
-	if predname = "statemod" then List.filter (fun (LNPFormula(f,_)) -> (my_starts_with "update" (true_formula_getPredname f) || (true_formula_getPredname f = "add"))) premises 
+	if predname = "statemod" then List.filter (fun (LNPFormula(f,_)) -> (my_starts_with "update" (true_formula_getPredname f) || (true_formula_getPredname f = "extend"))) premises 
 	else List.filter (fun (LNPFormula(f,_)) -> true_formula_getPredname f = predname) premises 
 
 let is_digit = function '0' .. '9' -> true | _ -> false

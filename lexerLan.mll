@@ -56,6 +56,13 @@ rule token = parse
   | "user-defined" { USER }
   | "retrieve" { RETRIEVE }
   | "set" { SET }
+  | "State" { STATEDECL }
+  | "with" { WITH }
+  | "key" { KEY }
+  | "=" { EQUAL }
+  | "updates" { UPDATES }
+  | "{" { LEFTCURLY }
+  | "}" { RIGHTCURLY }
   (* the following is the base *)
   | idLOW             { VARLEX (Lexing.lexeme lexbuf) }
   | idUP             { VARTERM (Lexing.lexeme lexbuf) }

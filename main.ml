@@ -24,7 +24,7 @@ let repoOfFunctional = "repo/"
 
 let repoOfProcessCalculi = "repoProcess/"
 
-let repoOfState = "repoMapState/"
+let repoOfState = "Languages/"
 
 let repoDir = repoOfState
 
@@ -85,6 +85,8 @@ let typeSoundnessState = [
 (* "./typeOf-add.lnp"
 ; *)
 "typeOf-irrelevanceOfEnv.lnp"
+; 
+"typeOf-irrelevanceOfEnv_trivial.lnp"
 ; 
 "preservation-state.lnp" 
 ]

@@ -210,7 +210,7 @@ let language_getTypeOfNthArg lan cname n : term =
 	
  let lang_map_constructor = "LNP_Map"
  let lang_map_constructor_strong = "LNP_Map_Strong"
-let lang_make_map key value strong_option = if is_some strong_option then Constr(lang_map_constructor_strong, [LangVar key ; LangVar value]) else Constr(lang_map_constructor, [LangVar key ; LangVar value])
+let lang_make_map (key : string) (value : string) (strong_option : bool option) : term  = if is_some strong_option then Constr(lang_map_constructor_strong, [LangVar key ; LangVar value]) else Constr(lang_map_constructor, [LangVar key ; LangVar value])
 
 let lang_retrieveRules_by_predname_opname lan (predname: string) (opname: string) : rule list = List.filter (rule_isPredname predname) (language_getRulesOfOp lan opname) 
 
@@ -228,7 +228,7 @@ let rec list_take n l = if n = 0 || l = [] then [] else (List.hd l) :: (list_tak
 let filter_maintain_position_in_list l f = map (fun a -> if f a then Some a else None) l   
 
 let lang_getOnlyPremisesOfPredname (premises : formula list) (predname : string) : formula list = 
-	if predname = "statemod" then filter (fun f -> formula_getPredname f = "update" || formula_getPredname f = "add") premises 
+	if predname = "statemod" then filter (fun f -> formula_getPredname f = "update" || formula_getPredname f = "extend") premises 
 	else filter (fun f -> formula_getPredname f = predname) premises 
 
 let lang_getIdxOfOnlyPremisesOfPredname (premises : formula list) (predname : string) : int list = 

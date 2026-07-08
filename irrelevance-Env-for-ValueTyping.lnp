@@ -5,7 +5,7 @@ for each s in states,
 		(ValueHyp : value v) ->  
 		(_ : typeOf (nilEnvT) prime(state_env(states) only state_env(s)) v t). 
 Proof.
-if s in weakstates then doNotGenerateThisProof else 
+if s in extensibleStates then doNotGenerateThisProof else 
 	intros. 
 	_ : case ValueHyp. 
 	for each v in Value: _ : case TypeOf. search endfor

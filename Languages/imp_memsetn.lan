@@ -1,0 +1,46 @@
+State { Heap H }
+Type T ::= (int) | (bool) | (refH T) | (unitT)
+Expression E ::= (num N)  | (tt) | (ff) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (seq E E) | (emptyList) | (cons E E) | (memsetn E E E) | (labelH L) | (unit) | (error)
+Value V ::=  (num N)  | (tt) | (ff) | (unit)  | (labelH L)
+Error ::=
+Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (seq C e)  
+Relation R ::= (step E H E H)
+.
+Gamma ; EnvH |- (num N) : (int). 
+Gamma ; EnvH |- (tt) : (bool). 
+Gamma ; EnvH |- (ff) : (bool). 
+Gamma ; EnvH |- (plus E1 E2) : (int) <== Gamma ; EnvH |- E1 : (int) /\ Gamma ; EnvH |- E2 : (int).
+Gamma ; EnvH |- (equal E1 E2) : (bool) <== Gamma ; EnvH |- E1 : (int) /\ Gamma ; EnvH |- E2 : (int).
+Gamma ; EnvH |- (deref E): T <== Gamma ; EnvH |- E : (refH T).
+Gamma ; EnvH |- (assign E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (refH T) /\ Gamma ; EnvH |- E2: T.
+Gamma ; EnvH |- (if E1 E2 E3): (unitT) <== Gamma ; EnvH |- E1 : (bool) /\ Gamma ; EnvH |- E2: (unitT) /\ Gamma ; EnvH |- E3: (unitT).
+Gamma ; EnvH |- (while E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (bool) /\ Gamma ; EnvH |- E2: (unitT). 
+Gamma ; EnvH |- (seq E1 E2): (unitT) <== Gamma ; EnvH |- E1 : (unitT) /\ Gamma ; EnvH |- E2: (unitT).
+
+Gamma ; EnvH |- (emptyList ) : (list T ).
+Gamma ; EnvH |- (cons E1 E2): (list T) <== Gamma ; EnvH |- E1: T /\ Gamma ; EnvH |- E2 : (list T).
+
+Gamma ; EnvH |- (memsetn E1 E2 E3): (unitT) <== Gamma ; EnvH |- E1 : (list (refH T)) /\ Gamma ; EnvH |- E2: T /\ Gamma ; EnvH |- E3: (int). 
+
+
+Gamma ; EnvH |- (labelH L) : (refH T) <== T <- EnvH(L).
+Gamma ; EnvH |- (unit ) : (unitT ).
+Gamma ; EnvH |- (error ) : T.
+
+
+(plus V1 V2); H --> V3; H <== user-defined (addition V1 V2 V3) /\ value V1 /\ value V2 /\ value V3. 
+(equal V1 V2); H --> V3; H <== user-defined (equality V1 V2 V3) /\ value V1 /\ value V2 /\ value V3. 
+(deref (labelH L)); H --> V; H <== V <- H(L).
+(assign (labelH L) V); H --> (unit); H' <== H' <- H[L|->V].
+(if (tt) E1 E2); H --> E1; H. 
+(if (ff) E1 E2); H --> E2; H. 
+(while E1 E2); H --> (if E1 (seq E2 (while E1 E2)) (unit)); H. 
+(seq (unit) E2); H --> E2; H. 
+
+(memsetn V1 V2 (num (zero))) ; H --> (unit); H. 
+
+(memsetn (emptyList) V2 (num (one))) ; H --> (error); H. 
+
+(memsetn (cons (label L1) V1) V2 (num (one))) ; H --> (memsetn V1 V2 (num (zero))) ; H' <== 
+	H' <- H[L1|->V2].
+	

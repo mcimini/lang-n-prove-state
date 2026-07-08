@@ -49,6 +49,14 @@
 %token SET
 %token RETRIEVE
 
+%token STATEDECL
+%token WITH
+%token KEY
+%token EQUAL
+%token UPDATES
+%token LEFTCURLY
+%token RIGHTCURLY
+
 
 %left EXEC
 
@@ -66,9 +74,19 @@ fileLan:
     { lan }
 
 language :
-	| grammar = list(grammarLine) DOT rules = list(rule) 
-  		{ Language(grammar, rules) }
- 
+	| states = statedecl grammar = list(grammarLine) DOT rules = list(rule) 
+  		{ Language(states @ grammar, rules) }
+
+statedecl :
+	| STATEDECL LEFTCURLY statelines = separated_list(COMMA, stateOnedecl) RIGHTCURLY 
+		{ statelines }
+
+stateOnedecl : 
+	| category = VARTERM metavar = VARTERM
+	{ GrammarLine(category, Some(metavar), Some [lang_make_map "L" "E" (None)]) } 
+	| category = VARTERM metavar = VARTERM WITH KEY EQUAL key = VARTERM strong = option(LEFTPAR STRONG UPDATES RIGHTPAR | { true }) 
+	{ GrammarLine(category, Some(metavar), Some [lang_make_map key "E" strong]) } 
+
 term :  
   | LEFTPAR opname = VARLEX ts = list(term) RIGHTPAR	
   { if opname = "num" then Constr("num", []) else Constr(opname, ts) }  
@@ -114,12 +132,12 @@ formula :
     { Formula("nstep", [t1 ; t2]) }
   | LEFTPAR opname = VARLEX ts = list(term) RIGHTPAR
     { Formula(opname, ts) }
-  | t1 = term LEFTARROW t2 = term AT t3 = term LEFTPAR t4 = term RIGHTPAR
-    { Formula("lookup", [t1 ; t2 ; t3 ; t4]) }
-  | t1 = term AT t2 = term COMMA t3 = term LEFTARROW t4 = term PLUS t5 = term 
-    { Formula("add", [t1 ; t2 ; t3 ; t4 ; t5]) }
-  | t1 = term AT t2 = term num = option(COMMA num = INT { num }) LEFTARROW t3 = term LEFTSQUARE t4 = term MAPSTO t5 = term RIGHTSQUARE
-    { if Option.is_some num then Formula("updateStrong", [t1 ; t2 ; t3 ; t4 ; t5 ; LangVar (string_of_int (Option.get num)) ]) else Formula("update", [t1 ; t2 ; t3 ; t4 ; t5 ]) }
+  | t1 = term LEFTARROW t2 = term LEFTPAR t4 = term RIGHTPAR
+    { match t2 with LangVar(metavar) -> let formalState = LangVar(String.make 1 (String.get metavar 0)) in Formula("lookup", [t1 ; t2 ; formalState ; t4]) }
+  | t1 = term COMMA t3 = term LEFTARROW t4 = term PLUS t5 = term optExtra = option(LEFTPAR l = list(term) RIGHTPAR { l } ) 
+    { match t1 with LangVar(metavar) -> let formalState = LangVar(String.make 1 (String.get metavar 0)) in  if Option.is_some optExtra then Formula("extend", [t1 ; formalState ; t3 ; t4 ; t5] @ Option.get optExtra) else Formula("extend", [t1 ; formalState ; t3 ; t4 ; t5]) }
+  | t1 = term LEFTARROW t3 = term LEFTSQUARE t4 = term MAPSTO t5 = term RIGHTSQUARE
+    { match t1 with LangVar(metavar) -> let formalState = LangVar(String.make 1 (String.get metavar 0)) in  match t4 with LangVar(metavarKey) -> if metavarKey.[0] = 'L' then Formula("update", [t1 ; formalState ; t3 ; t4 ; t5 ]) else Formula("updateStrong", [t1 ; formalState ; t3 ; t4 ; t5 ]) } 
   | USER LEFTPAR predname = VARLEX ts = list(term) RIGHTPAR
   	{ Formula("user-defined", LangVar predname :: ts) }
   | SET t1 = term GRAMMARASSIGN LEFTSQUARE lists = separated_list(COMMA, t2 = term MAPSTO t3 = term { [t2 ; t3]}) RIGHTSQUARE

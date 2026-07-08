@@ -1,4 +1,4 @@
-for each s in weakstates,
+for each s in extensibleStates,
     Theorem Lookup-store-weakening-_(s): 
         forall*,
         (Main : =SubsetEnv_(s)= env env') ->

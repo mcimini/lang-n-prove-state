@@ -40,6 +40,7 @@ type token =
   | NOTTERM
   | NOP
   | NEWENTRY
+  | NAMECONVENTION
   | NAME of (string)
   | MAPENV
   | MAKECONS

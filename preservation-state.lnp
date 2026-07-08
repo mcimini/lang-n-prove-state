@@ -1,10 +1,10 @@
 Theorem Type-preservation : 
 forall*,
     (Main : typeOf (nilEnvT) state_env(states) e typ) ->
-	IMPLY(s in states) : (TypeOf_(can(s)) : =TypeOf_(can(s))= state_env(states) s) endIMPLY -> 
+	IMPLY(s in states) : (TypeOf_(s) : =TypeOf_(s)= state_env(states) s) endIMPLY -> 
     (Step : step e states e' prime(states)) ->
 	exists*, 
-	AND(s in weakstates) : (_ :  =Subset_(state_env(s))= state_env(s) prime(state_env(s))) endAND
+	AND(s in extensibleStates) : (_ :  =Subset_(state_env(s))= state_env(s) prime(state_env(s))) endAND
 	/\ 
     (_ :  typeOf (nilEnvT) prime(state_env(states)) e' typ) /\
 	AND(s in states): (_ : =TypeOf_(s)= prime(state_env(states)) prime(s)) endAND. 
@@ -16,70 +16,45 @@ for each e in Expression:
 	Prem_(0) : case Step. 
 	for each r in e.rules[step] : 
 
-				for each i in range(arity(e)) :  
-				if constructed(getArgs(r.conclusion[none].sourceExp[none], i)) 
-				then if (arity(getArgs(r.conclusion[none].sourceExp[none], i)) = 0)
-					then _ : case Typing_(i) 
-					else TypingInserted_(getArgs(getArgs(r.conclusion[none].sourceExp[none], i), 0)) : case Typing_(i) 
-					endif
-				else TypingInserted_(getArgs(r.conclusion[none].sourceExp[none], i)) : apply Typing_(i) to  
-				endfor.
-	
+				caseWithNamingforVars(r.conclusion.sourceExp, TypeOfVar, Typing).
+					
 	    		for each p in r.premises[lookup] : 
-				    if isLabel(p.label[none]) then LookupInserted_(p.label[none]) : case TypingInserted_(p.label[none]) else LookupInserted_(p.label[none]) : apply TypingInserted_(p.label[none]) to endif. 
-					TypingInserted_(p.output[none]) : apply Find-type-in-env_(p.mapName[none]) to Prem_(p) TypeOf_(p.mapName[none]) LookupInserted_(p.label[none]) with env=p.mapName[none].otherEnvs[none]..
-					if constructed(p.output[none]) then _ : case  TypingInserted_(p.output[none]) else noOp				
+				if isLabel(p.key) then TypeOfVar_(p.output) : apply Find-type-in-env_(p.state) to Prem_(p) TypeOf_(p.state) TypeOfVar_(p.key) with envs=p.state.otherEnvs. 
+									else TypeOfVar_(p.output) : apply Find-type-in-env-byLookup_(p.state) to Prem_(p) TypeOf_(p.state) TypeOfVar_(p.key) with env=p.state.otherEnvs. endif.
+				if constructed(p.output) then _ : case  TypeOfVar_(p.output) else noOp				
 				endfor.
 
-	    		for each p in r.premises[user-defined] : TypingInserted_(p.output[none]) : apply Find-type-user-defined-_(p.predname[none]) to Prem_(p) TypingInserted_(p.args[none]) endfor.
+	    		for each p in r.premises[user-defined] : TypeOfVar_(p.output) : apply Find-type-user-defined-_(p.predname) to Prem_(p) TypeOfVar_(p.args) endfor.
 
-				for each p in r.premises[subtype] : 
-					assert (TypingInserted_(p.newAddedLabel[none]) : typeOf (nilEnvT) p.envs[none] p.newAddedLabel[none] p.type[none]). 
-					for each env in p.envs[none] : if env.nominalState[none] in weakstates then assert (Subset_(env.nominal[none]) : =Subset_(env.nominal[none])= env.nominal[none] env) else noOp endfor. 
-					for each var in p.varsAffected[none] : 
-						Tmp : apply Type-state-envs-weakening-_(states) to TypingInserted_(var) Subset_(p.envsNominal[none])
-					endfor.
-					for each env in p.envs[none] : if env.nominalState[none] in weakstates then clear Subset_(env.nominal[none]) else noOp endfor 
-				endfor. 
+				for each p in r.premises[extend] : assert (TypeOfVar_(p.newLabel) : typeOf (nilEnvT) p.envs[e] p.newLabel[toTerm] p.type) endfor. 
 
 				for each p in r.premises[statemod] : 				    
-					if (p.op[none] = 0)
-						then
-						    if isLabel(p.mainInput[none]) then LookupInserted_(p.mainInput[none]) : case TypingInserted_(p.mainInput[none]) else LookupInserted_(p.mainInput[none]) : apply TypingInserted_(p.mainInput[none]) to endif. 							
-							TypeOf_(p.outputMap[none]) : apply TypeOf-update_(p.mapName[none]) to TypeOf_(p.inputMap[none]) LookupInserted_(p.mainInput[none]) TypingInserted_(p.inserted[none]) Prem_(p)
+					if p.weakupdate then TypeOf_(p.output) : 
+								apply TypeOf-update_(p.state) to TypeOf_(p.inputState) TypeOfVar_(p.key) TypeOfVar_(p.inserted) Prem_(p)
 						else 
-							if (p.op[none] = 1) then 
-							    Tmp : apply Irrelevance-Env-for-ValueTyping-_(p.mapName[none]) to TypingInserted_(p.inserted[none]) _ with EnvR'=EnvR'..  
-								TypeOf_(p.outputMap[none]) : apply TypeOf-update_(p.mapName[none]) to TypeOf_(p.inputMap[none]) Typing_(p.envPremise[none]) Tmp Prem_(p)						
-							else TypeOfForPrem_(p) : apply TypeOf-weakening-_(p.mapName[none]) to TypeOf_(p.inputMap[none]) TypingInserted_(p.mainInput[none]) with l=p.newLabel[none]..
-								 TypeOf_(p.outputMap[none]) : apply TypeOf-add_(p.mapName[none]) to Prem_(p) TypeOfForPrem_(p).
-								 _ : case Prem_(p).
-								 if irrelevant(p.mapName[none]) then 
-									 Tmp : apply Irrelevance-TypeOf-with-ExtensionsOfEnv-_(p.otherMap[none]) to TypeOf_(p.otherMap[none]) with L=L, T=T..
-									 clear TypeOf_(p.otherMap[none]).
-									 TypeOf_(p.otherMap[none]) : apply Tmp to. 
-									 clear Tmp
-								 else noOp endif 
+							if p.strongupdate then TypeOf_(p.output) : 
+								 apply TypeOf-strong-update_(p.state) to TypeOf_(p.inputState) Typing_(p.envPremise[e]) TypeOfVar_(p.inserted) Prem_(p). 
+								 for each s in p.state.otherStates : TypeOf_(s) : apply TypeOf-irrelevanceOfEnv-_(s) to TypeOf_(s) with env=p.newEnv, env=p.newEnv. endfor
+							else 
+						 		 _ : case Prem_(p).
+								 TypeOfForPrem_(p) : apply TypeOf-weakening-_(p.state) to TypeOf_(p.inputState) TypeOfVar_(p.inserted) with l=p.newLabel..
+								 TypeOf_(p.output) : apply TypeOf-extend_(p.state) to Prem_(p) TypeOfForPrem_(p).
+								 for each s in p.state.otherStates : TypeOf_(s) : apply Irrelevance-TypeOf-with-ExtensionsOfEnv-_(s) to TypeOf_(s) TypeOfVar_(p.inserted) with l=p.newLabel, l=p.newLabel. endfor
 							endif
 					endif
 				endfor.
-					
-	    		for each p in e.rule[typeOf].premises[retrieve] : 
-					if findVarTest(getArgs(r.conclusion[none].sourceExp[none], whichArgIdx(e.rule[typeOf].conclusion[none].exp[none], p.varAffected[none])), r.premises[all])
-					then _ : apply Set-retrieve-equal-_(p.mapName[none]) to Typing_(p) _ else noOp
-				endfor.
 								
-				for each s in states : witness mapNewEntry(r,can(state_env(s))) endfor.
+				for each s in states : witness envAfterStep(r,s) endfor.
 				split. 
 				
-				for each s in weakstates : search endfor. 
+				for each s in extensibleStates : search endfor. 
 
-				if containsSubstitution(r.conclusion[none].targetExp[none]) then skip else backchain on Type-state-envs-weakening-_(states) endif. 
+				if containsSubstitution(r.conclusion.targetExp) then skip else backchain on Type-state-envs-weakening-_(states) endif. 
 				
-				for each s in states :  if irrelevant(s) then backchain on TypeOf-irrelevanceOfEnv-_(s) else search endfor 				
+				for each s in states : backchain on TypeOf-irrelevanceOfEnv-_(s) endfor 				
 	endfor.  
 	for each i in contextualArgs(e): 
-		MapEnvSubset0 : apply IH0 to Typing_(i) TypeOf_(can(states)) Prem_(0).
+		MapEnvSubset0 : apply IH0 to Typing_(i) TypeOf_(states) Prem_(0).
 		for each s in states : witness prime(state_env(s)) endfor.
 		split. 
 		for each s in states : search endfor. 

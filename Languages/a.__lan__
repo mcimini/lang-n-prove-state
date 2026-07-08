@@ -1,0 +1,83 @@
+State { Heap H, RegisterFile R with key = Z (strong updates) }
+Register Z ::= (r1) | (r2) 
+Type T ::= (int) | (refH T) | (unitT) | (codeT NvrR)
+Expression E ::= x | (zero) | (one) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (mallocInt Z E E) | (mallocLabel Z E E) | (mallocCode Z E E) | (moveInt Z E E) | (moveLabel Z E E) | (moveCode Z E E) | (store Z Z E) | (jmp E) | (bnz Z E E) | (code NvrR E) | (labelH L) 
+Value V ::= (halt) | (zero) | (one) | (labelH L) 
+Relation R ::= (step E H R E H R)
+Error ::=
+Context C ::= [] | 
+.
+Gamma ; EnvH ; EnvR |- (zero) : (int). 
+Gamma ; EnvH ; EnvR |- (one) : (int). 
+Gamma ; EnvH ; EnvR |- (halt) : (unitT). 
+Gamma ; EnvH ; EnvR |- (add Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
+Gamma ; EnvH ; EnvR |- (mult Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
+Gamma ; EnvH ; EnvR |- (load Zd Zs E) : (unitT) <== (refH T) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR' |- E : (unitT) /\ EnvR' <- EnvR[Zd|->T].
+
+Gamma ; EnvH ; EnvR |- (mallocInt Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(refH (int))].
+Gamma ; EnvH ; EnvR |- (mallocLabel Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (refH T) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(refH (refH T))].
+Gamma ; EnvH ; EnvR |- (mallocCode Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (codeT EnvR'') /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(refH (codeT EnvR''))].
+
+Gamma ; EnvH ; EnvR |- (moveInt Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
+Gamma ; EnvH ; EnvR |- (moveLabel Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (refH T) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(refH T)].
+Gamma ; EnvH ; EnvR |- (moveCode Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (codeT EnvR'') /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(codeT EnvR'')].
+
+Gamma ; EnvH ; EnvR |- (store Zd Zs E) : (unitT) <== (refH T) <- EnvR(Zd) /\ T <- EnvR(Zs) /\ Gamma ; EnvH ; EnvR |- E : (unitT).
+Gamma ; EnvH ; EnvR |- (jmp E) : (unitT) <== Gamma ; EnvH ; EnvR |- E : (refH (codeT EnvR)). 
+Gamma ; EnvH ; EnvR |- (bnz Zs E1 E2) : (unitT) <== Gamma ; EnvR |- Zs : (int) /\ Gamma ; EnvH ; EnvR |- E1 : (refH (codeT EnvR)) /\ Gamma ; EnvH ; EnvR |- E2 : (unitT).
+Gamma ; EnvH ; EnvR |- (code EnvR' E) : (codeT EnvR') <== Gamma ; EnvH ; EnvR' |- E : (unitT). 
+Gamma ; EnvH ; EnvR |- (labelH L) : (refH T) <== T <- EnvH(L).
+
+
+(add Zd Zs V1 E); H ; R --> E; H ; R' <== 
+	V2 <- R(Zs) /\
+	user-defined (addition V1 V2 V3) /\
+	R' <- R[Zd|->V3].
+
+(mult Zd Zs V1 E); H ; R --> E; H ; R' <== 
+	V2 <- R(Zs) /\
+	user-defined (multiplication V1 V2 V3) /\
+	R' <- R[Zd|->V3].
+
+(load Zd Zs E); H ; R --> E; H ; R' <== 
+	(labelH L) <- R(Zs) /\
+	V <- H(L) /\
+	R' <- R[Zd|->V].
+
+(mallocInt Zd V E); H ; R --> E; H' ; R' <== 
+	H', LNewH <- H + V /\ 
+	R' <- R[Zd|-> (labelH LNewH)].  
+	
+(mallocLabel Zd V E); H ; R --> E; H' ; R' <== 
+	H', LNewH <- H + V /\ 
+	R' <- R[Zd|-> (labelH LNewH)].  
+	
+(mallocCode Zd V E); H ; R --> E; H' ; R' <== 
+	H', LNewH <- H + V /\ 
+	R' <- R[Zd|-> (labelH LNewH)].  
+	
+(moveInt Zd V E); H ; R --> E; H ; R' <== 
+	R' <- R[Zd|->V].
+
+(moveLabel Zd V E); H ; R --> E; H ; R' <== 
+	R' <- R[Zd|->V].
+
+(moveCode Zd V E); H ; R --> E; H ; R' <== 
+	R' <- R[Zd|->V].
+
+(store Zd Zs E); H ; R --> E; H' ; R <== 
+	(labelH L) <- R(Zd) /\
+	V <- R(Zs) /\
+	H' <- H[L|->V].
+
+(jmp (labelH L)); H ; R --> E; H ; R <== 
+	(code EnvR E) <- H(L).
+
+(bnz Zs (labelH L) E2); H ; R --> E1; H ; R <== 
+	(zero) <- R(Zs) /\
+	(code EnvR E1) <- H(L).
+	
+(bnz Zs (labelH L) E); H ; R --> E; H ; R <== 
+	(one) <- R(Zs).
+	
+	

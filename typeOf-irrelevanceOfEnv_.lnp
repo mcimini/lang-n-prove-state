@@ -1,0 +1,20 @@
+for each s in states,
+    Theorem TypeOf-irrelevanceOfEnv-_(s): 
+        forall*,
+        (Main : =TypeOf_(s)= state_env(states) map) ->
+        (_ : =TypeOf_(s)= prime(state_env(states) except state_env(s)) map).
+Proof. 
+if (states = extensibleStates) then intros. search else 
+	if s in extensibleStates 
+	then
+		intros. 
+		TypeOfExpanded : case Main. 
+		unfold. intros. 
+		_ : apply TypeOfExpanded to Main1. 
+		_ : apply Store-stores-values-_(s) to H1. 
+		witness e endwitness. 
+		_ : case H3.
+		for each v in Value: _ : case H2. search endfor
+	else doNotGenerateThisProof endif
+endif
+

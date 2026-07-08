@@ -55,10 +55,10 @@ let language_prettyPrintFormula formula =
 				-> language_prettyPrintHypotheticalWrap
 					(* ("updateStrongMap" ^ ( term_getCNAME  (List.nth arguments 1))) (List.tl (List.tl arguments)) *)
 					("updateStrongMap" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n (pop_n arguments 5) 1)
-			| "add" ->
+			| "extend" ->
 				language_prettyPrintHypotheticalWrap
 					(* ("updateMap" ^ ( term_getCNAME  (List.nth arguments 1))) (List.tl (List.tl arguments)) *)
-					("add" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n (pop_n arguments 5) 1)
+					("extend" ^ ( term_getCNAME  (List.nth arguments 1))) (pop_n (pop_n arguments 5) 1)
 			| _ -> predname ^ " " ^ (String.concat " " (List.map (language_prettyPrintTerm_map_version false) arguments))
 
 let language_prettyPrintRule rule = 

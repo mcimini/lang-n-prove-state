@@ -2,6 +2,7 @@
 (* The type of tokens. *)
 
 type token = 
+  | WITH
   | VARX
   | VARTERM of (string)
   | VARLEX of (string)
@@ -9,16 +10,19 @@ type token =
   | VALUEPRED
   | VALUECTX
   | USER
+  | UPDATES
   | TURNSTYLE
   | SUBTYPING
   | SUBSTBAR
   | STRONG
   | STEP
+  | STATEDECL
   | SET
   | SEMICOLON
   | RSQUARE
   | RIGHTSQUARE
   | RIGHTPAR
+  | RIGHTCURLY
   | RETRIEVE
   | PROVIDED
   | PLUS
@@ -29,12 +33,15 @@ type token =
   | LSQUARE
   | LEFTSQUARE
   | LEFTPAR
+  | LEFTCURLY
   | LEFTARROW
   | LABELEDSTEP
+  | KEY
   | INT of (int)
   | GRAMMARASSIGN
   | GAMMA
   | EXPCTX
+  | EQUAL
   | EOF
   | EMPTYCTX
   | DOT

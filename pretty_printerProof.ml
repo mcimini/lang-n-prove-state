@@ -60,8 +60,8 @@ let define_typeof_fixed (allmaps : string list) (ms : string list) : string =
   "Theorem Uniqueness-of-lookupMap-" ^ m ^" : forall map L e1 e2, {lookupMap" ^ m ^" map L e1} -> {lookupMap" ^ m ^ " map L e2} -> e1 = e2.
 skip.\n"
 		
-let find_type_in_env (ms : string list) (m : string) : string = 
-  "Theorem  Find-type-in-env" ^ m ^ "  :
+let find_type_in_env_byLookup (ms : string list) (m : string) : string = 
+  "Theorem  Find-type-in-env-byLookup" ^ m ^ "  :
     forall " ^ (String.concat " " (getEnvMetaVarsCapitalized ms)) ^ " map L e T,
     {lookupMap" ^ m ^ " map L e} ->
     typeOf" ^ m ^ " " ^ (String.concat " " (getEnvMetaVarsCapitalized ms)) ^ " map ->
@@ -73,16 +73,28 @@ let find_type_in_env (ms : string list) (m : string) : string =
 	apply Uniqueness-of-lookupMap-" ^ m ^ " to Lookup H2.
 	search.\n"
 
-	(* old version of the proof where premise is typeOf labelH rather then lookupEnv  
-		theorem premise:     {typeOf (nilEnvT) " ^ (String.concat " " (getEnvMetaVars ms)) ^ " (label" ^ m ^ " L) (ref" ^ m ^ " T)} ->\n
-		proof:
-    "intros lookup typeOfH typeOf.\n
-    case typeOf(keep).\n
-    case typeOfH(keep).\n
-    apply H2 to H1.\n
-    apply Uniqueness-of-lookupMap" ^ m ^ " to lookup H3.\n
-    search.\n"
-		*)
+let find_type_in_env (ms : string list) (m : string) : string = 
+    "Theorem  Find-type-in-env" ^ m ^ "  :
+    forall " ^ (String.concat " " (getEnvMetaVarsCapitalized ms)) ^ " map L e T,
+    {lookupMap" ^ m ^ " map L e} ->
+    typeOf" ^ m ^ " " ^ (String.concat " " (getEnvMetaVarsCapitalized ms)) ^ " map ->
+	{typeOf (nilEnvT) " ^ (String.concat " " (getEnvMetaVarsCapitalized ms)) ^ " (label" ^ m ^ " L) (ref" ^ m ^ " T)} -> 
+    {typeOf (nilEnvT) " ^ (String.concat " " (getEnvMetaVarsCapitalized ms)) ^ " e T}. \n" ^
+	"intros Lookup typeOfH TypeOfVar. 
+	LookupEnv : case TypeOfVar. 
+	case typeOfH(keep).
+	apply H1 to LookupEnv.
+	apply Uniqueness-of-lookupMap-" ^ m ^ " to Lookup H2.
+	search.\n"
+		
+		(*				    
+			if isLabel(p.label[none]) then LookupInserted_(p.label[none]) : case TypeOfVar_(p.label[none]) else LookupInserted_(p.label[none]) : apply TypeOfVar_(p.label[none]) to endif. 
+			TypeOfVar_(p.output[none]) : apply Find-type-in-env_(p.state[none]) to Prem_(p) TypeOf_(p.state[none]) LookupInserted_(p.label[none]) with env=p.state[none].otherEnvs[none]..
+			
+			if isLabel(p.label[none]) then TypeOfVar_(p.output[none]) : apply Find-type-in-env_(p.state[none]) to Prem_(p) TypeOf_(p.state[none]) TypeOfVar_(p.label[none]) with env=p.state[none].otherEnvs[none]. 
+									  else TypeOfVar_(p.output[none]) : apply Find-type-in-env-byLookup_(p.state[none]) to Prem_(p) TypeOf_(p.state[none]) TypeOfVar_(p.label[none]) with env=p.state[none].otherEnvs[none].. 
+			
+*)
 
 
 let uniqueness_of_lookupEnv (m : string) : string =
@@ -164,11 +176,12 @@ let typeOf_update (ms : string list) (m : string) : string  =
   "Theorem TypeOf-update"^ m ^": 
     forall " ^ (String.concat " " (getEnvMetaVars ms)) ^ " map map' e T L,
       typeOf" ^ m ^ " " ^ (String.concat " " (getEnvMetaVars ms)) ^ " map ->
-	  	{lookupEnv" ^ m ^ " env" ^ m ^ " L T} ->
+	  	{typeOf (nilEnvT) " ^ (String.concat " " (getEnvMetaVars ms)) ^ " (label" ^ m ^ " L) (ref" ^ m ^ " T)} -> 
     {typeOf nilEnvT " ^ (String.concat " " (getEnvMetaVars ms)) ^ " e T} ->
       {updateMap" ^ m ^ " map L e map'} ->
       typeOf" ^ m ^ " " ^ (String.concat " " (getEnvMetaVars ms)) ^ " map'.\n
-	  intros TypeOfH LookupEnv TypeOfE Update. 
+	  intros TypeOfH LookupEnvNotYet TypeOfE Update. 
+	  LookupEnv : case LookupEnvNotYet. 
 	  TypeOfHExpanded: case TypeOfH.
 	  unfold.
 	  intros LookupEnvHOfGoal.
@@ -182,17 +195,27 @@ let typeOf_update (ms : string list) (m : string) : string  =
 	  LookupMap : apply TypeOfHExpanded to LookupEnvHOfGoal.
 	  apply lookup_when_inequal_labels-" ^ m ^ " to Landl Update LookupMap.
 	  search.\n"
+	  
+	  (* 						    if isLabel(p.key[none]) then LookupInserted_(p.key[none]) : case TypeOfVar_(p.key[none]) else LookupInserted_(p.key[none]) : apply TypeOfVar_(p.key[none]) to endif. 							
+							TypeOf_(p.output[none]) : apply TypeOf-update_(p.state[none]) to TypeOf_(p.inputState[none]) LookupInserted_(p.key[none]) TypeOfVar_(p.inserted[none]) Prem_(p)
+ and had 	  	{lookupEnv" ^ m ^ " env" ^ m ^ " L T} ->
 
+	  *)
+	  
+	  (* 	{typeOf nilEnvT envH envR e T} -> used to be 	{typeOf nilEnvT envH envR' e T} -> *)
 let typeOf_update_strong (ms : string list) (m : string) : string  = 
-"Theorem TypeOf-updateR: 
+"Theorem TypeOf-strong-updateR: 
     %assert 
 	forall envH mapR mapR' envR envR' e T L,
     typeOfR envH envR mapR ->
     {updateEnvR envR L T envR'} ->
-	{typeOf nilEnvT envH envR' e T} ->
+	{typeOf nilEnvT envH envR e T} ->
     {updateMapR mapR L e mapR'} ->
     typeOfR envH envR' mapR'. 
-    intros TypeOfH LookupEnv TypeOfE Update. 
+    intros TypeOfH LookupEnv TypeOfE Update.
+	TmpLookup : apply update_implies_lookup-" ^ m ^ "  to Update. 
+	TmpValue : apply Store-stores-values-" ^ m ^ "  to TmpLookup. 
+	TypeOfE : assert {typeOf nilEnvT envH envR' e T}. backchain Irrelevance-Env-for-ValueTyping-" ^ m ^ ". 
     TypeOfHExpanded: case TypeOfH.
     unfold.
     intros LookupEnvHOfGoal.
@@ -212,16 +235,15 @@ let typeOf_update_strong (ms : string list) (m : string) : string  =
     backchain Irrelevance-Env-for-ValueTyping-" ^ m ^ ".\n"
 
   (*
-let lookup_store_weakening m = "Theorem Lookup-store-weakening-" ^m ^ "\n:
-  forall env l t env'\n,
-    {subsetEnv" ^ m ^ " env env'} ->\n
-    {lookupEnv" ^ m ^ " env l t} ->\n
-    {lookupEnv" ^ m ^ " env' l t}.\n
-induction on 1. intros Main Lookup.\n
-Subset: case Main.\n
-    search.\n
-apply IH to Subset Lookup.\n
-    search.\n"
+	  new premise: TypeOfVar_(p.inserted[none]): typeOf (nilEnvT) state_env(states) v t)
+							    Tmp : apply Irrelevance-Env-for-ValueTyping-_(p.mapName[none]) to TypeOfVar_(p.inserted[none]) _ with EnvR'=EnvR'..  
+								TypeOf_(p.outputMap[none]) : apply TypeOf-update_(p.mapName[none]) to TypeOf_(p.inputMap[none]) Typing_(p.envPremise[none]) Tmp Prem_(p)						
+
+								TypeOf_(p.outputMap[none]) : apply TypeOf-strong-update_(p.mapName[none]) to TypeOf_(p.inputMap[none]) Typing_(p.envPremise[none]) TypeOfVar_(p.inserted[none]) _  Prem_(p)						
+    and proof: {value e} -> 
+	intros TypeOfH LookupEnv TypeOfEnotYet Value Update.
+	TypeOfE : apply Irrelevance-Env-for-ValueTyping-R to TypeOfEnotYet Value with EnvR' = envR'.
+
 *)
 	  
 let labels_remain_in_extended (m : string) : string  = 
@@ -255,7 +277,7 @@ let typeOf_weakening (ms : string list) (m : string) : string  =
 
 
 let typeOf_add (ms : string list) (m : string) : string =
-  "Theorem TypeOf-add" ^ m ^" : forall map E map' L T env " ^ (String.concat " " (List.tl (getEnvMetaVars ms))) ^ ",  
+  "Theorem TypeOf-extend" ^ m ^" : forall map E map' L T env " ^ (String.concat " " (List.tl (getEnvMetaVars ms))) ^ ",  
   {addMapH map E map' L} -> typeOf" ^ m ^ " (consEnv" ^ m ^ " L T env) " ^ (String.concat " " (List.tl (getEnvMetaVars ms))) ^ " (consMapH L E map) -> typeOf" ^m ^ " (consEnv" ^ m ^ " L T env) " ^ (String.concat " " (List.tl (getEnvMetaVars ms))) ^ " map'. \n
   induction on 1. intros Main Lookup.
   Subset: case Main.
@@ -284,11 +306,13 @@ let irrelevant_typeof_extensionEnv lan (m : string) : string =
 	let listOfAllArgsOfStepMinusTheState = list_difference listOfAllArgsOfStep [LangVar m] in 
 	let (LangVar otherstateWithIndex) = List.nth listOfAllArgsOfStepMinusTheState 1 in (* second element of the step E R when H is removed *)
 	let (Var otherstate) = var_trim_numbers (Var otherstateWithIndex) in 
-	
+
+(* it used to be  	typeOfR (consEnvH (succLabelH l) T EnvH) EnvR R.  when you were passing L rather than LNewH *)	
 	" Theorem Irrelevance-TypeOf-with-ExtensionsOfEnv-" ^ m ^ ": 
- 	forall EnvH EnvR L T R,
+ 	forall EnvH EnvR l T R E,
  	typeOfR EnvH EnvR R ->
- 	typeOfR (consEnvH (succLabelH L) T EnvH) EnvR R.
+	{typeOf nilEnvT EnvH EnvR E T} -> 
+ 	typeOfR (consEnvH l T EnvH) EnvR R.
 	intros TypeOfR. 
 	TypeOfRExpanded: case TypeOfR. 
 	unfold. intros LookupFromGoal.
@@ -309,6 +333,7 @@ let generate_all_common_proofs_extensible lan (ms : string list) (m : string) : 
     uniqueness_of_lookupMap m;
     find_type_in_env ms m;
     uniqueness_of_lookupEnv m;
+	find_type_in_env_byLookup ms m;
     excluded_middle_labels m;
     update_implies_lookup m;
     inequality_contradiction m;
@@ -327,7 +352,7 @@ let generate_all_common_proofs_extensible lan (ms : string list) (m : string) : 
 let generate_all_common_proofs_fixed lan (ms : string list) (m : string) : string =
 let proofs = [
     uniqueness_of_lookupMap m;
-    find_type_in_env ms m;
+	find_type_in_env_byLookup ms m;
     uniqueness_of_lookupEnv m;
     excluded_middle_labels m;
     update_implies_lookup m;

@@ -1,0 +1,11 @@
+for each s in states,
+    Theorem TypeOf-irrelevanceOfEnv-_(s): 
+        forall*,
+        (Main : =TypeOf_(s)= state_env(states) map) ->
+        (_ : =TypeOf_(s)= state_env(states) map).
+Proof. 
+if s in extensibleStates 
+	then doNotGenerateThisProof 
+	else intros. search
+endif
+
