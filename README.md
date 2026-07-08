@@ -1,7 +1,5 @@
 # Lang-n-Prove: A Proof Language for Language Proofs
 
-Author: Matteo Cimini (matteo_cimini@uml.edu)
-	<br />
 # <a name="instructions"></a>Instructions 
 <br />
 
