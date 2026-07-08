@@ -1,0 +1,20 @@
+Specification "imp_repeat". 
+
+Theorem Find-type-user-defined-addition: 
+	%assert 
+	forall EnvH V1 V2 V3, 
+	{addition V1 V2 V3} -> 
+	{typeOf nilEnvT EnvH V1 int} -> 
+	{typeOf nilEnvT EnvH V2 int} -> 
+	{typeOf nilEnvT EnvH V3 int}. 
+intros. case H1. search.  
+
+
+Theorem Find-type-user-defined-equality: 
+	%assert 
+	forall EnvH V1 V2 V3, 
+	{equality V1 V2 V3} -> 
+	{typeOf nilEnvT EnvH V1 int} -> 
+	{typeOf nilEnvT EnvH V2 int} -> 
+	{typeOf nilEnvT EnvH V3 bool}. 
+intros. case H1. search.  
