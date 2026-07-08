@@ -1,3 +1,0 @@
-for each s in states, Theorem Uniqueness-of-lookupMap_(s) : forall*, (_ : =LookupMap_(s)= map l e1) -> (_ : =LookupMap_(s)= map l e2) -> (e1 = e2).
-Proof.
-skip

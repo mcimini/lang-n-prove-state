@@ -1,8 +1,0 @@
-for each s in states,
-    Theorem Inequality-contradiction_(s):
-    forall*,
-    (l = l)-> 
-    (_ : false) ->
-    (_ : false).
-Proof.
-skip
