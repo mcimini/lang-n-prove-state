@@ -15,6 +15,6 @@ clean:
 	rm *.cmo
 	rm *.cmi
 	rm $(OUTPUT)
-	rm $(GENERATEDDIR)*.mod
+	rm $(GENERATEDDIR)*.thc
 	rm $(GENERATEDDIR)*.thm
 
