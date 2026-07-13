@@ -1,7 +1,6 @@
 # Lang-n-Prove: A Proof Language for Language Proofs 
 ## (Extension to Languages with memory-like state)
 
-# <a name="instructions"></a>Instructions 
 
 <br />
 
