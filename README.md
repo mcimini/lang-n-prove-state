@@ -1,10 +1,13 @@
-# Lang-n-Prove: A Proof Language for Language Proofs (Extension to Stateful Languages)
+# Lang-n-Prove: A Proof Language for Language Proofs 
+##(Extension to Languages with memory-like state)
 
 # <a name="instructions"></a>Instructions 
 
 <br />
 
-Information: This version of the Lang-n-prove tool extends the tool implementation of [1]. 
+Information: 
+<br />
+This version of the Lang-n-prove tool extends the tool implementation of [1]. 
 <br />
 [1] Lang-n-Prove: A DSL for Language Proofs. Matteo Cimini (SLE 2022). 
 
