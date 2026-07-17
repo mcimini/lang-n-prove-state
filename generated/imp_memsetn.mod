@@ -17,8 +17,8 @@ updateMapH (consMapH L1 E1 MU) L E' (consMapH L1 E1 MU') :- updateMapH MU L E' M
 addMapH (consMapH L E1 MU) E2 (consMapH (succLabelH L) E2 (consMapH L E1 MU)) (succLabelH L). 
 
 
-
-typeOf Gamma EnvH (num N) (int).
+typeOf Gamma EnvH (zero) (int).
+typeOf Gamma EnvH (succ E) (int) :- typeOf Gamma EnvH E (int). 
 typeOf Gamma EnvH (tt) (bool).
 typeOf Gamma EnvH (ff) (bool).
 typeOf Gamma EnvH (plus E1 E2) int :-typeOf Gamma EnvH E1 int, typeOf Gamma EnvH E2 int.
@@ -54,11 +54,12 @@ step (if ff E1 E2) H E2 H.
 step (while E1 E2) H (if E1 (seq E2 (while E1 E2)) unit) H. 
 step (seq (unit) E2) H unit H. 
 
-step (memsetn V1 V2 (num zero)) MU1  unit MU1.
-step (memsetn (emptyList) V2 (num one)) MU1 error MU1. 
-step (memsetn (cons (labelH GET1) V1) V2 (num one)) MU1 (memsetn V1 V2 (num zero)) MU1' :-  updateMapH MU1 GET1 V2 MU1', value V2.
+step (memsetn V1 V2 (zero)) MU1  unit MU1.
+step (memsetn (emptyList) V2 (succ V)) MU1 error MU1. 
+step (memsetn (cons (labelH GET1) V1) V2 (succ V)) MU1 (memsetn V1 V2 V) MU1' :-  updateMapH MU1 GET1 V2 MU1', value V2.
 
-value (num N).
+value (zero).
+value (succ E) :- value E. 
 value (tt).
 value (ff).
 value (unit).
@@ -74,9 +75,12 @@ step (assign E1 E2) MU1  (assign E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1
 step (if E1 E2 E3) MU1  (if E1' E2 E3) MU1' :- step E1 MU1  E1' MU1'.
 step (seq E1 E2) MU1  (seq E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 
-addition (num zero) (num zero) (num zero).
+addition zero E E.
+addition (succ E1) E2 (succ E3) :- addition E1 E2 E3. 
+
 equality V V tt.
 
-inequality (num zero) (num one) tt.
-inequality (num one) (num zero) tt.
+inequality zero (succ E) tt.
+inequality (succ E) zero tt.
+inequality (succ E1) (succ E2) V :- inequality E1 E2 V.
 

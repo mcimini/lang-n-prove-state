@@ -16,6 +16,8 @@ IH0 : induction on 1. intros Main Subset. case Main.
  Subset2 : assert {subsetEnvH EnvH (consEnvH L T Rest)}.  
  Typing0: case Main(keep).  
  search.  
+ Msucc: apply IH0 to Typing0 Subset2.  
+ search.  
  search.  
  search.  
  Mplus: apply IH0 to Typing0 Subset2.  
@@ -192,7 +194,10 @@ intros Main.
 
 Theorem Type-preservation: forall EnvH, forall e, forall typ, forall H, forall e', forall H', {typeOf (nilEnvT) EnvH e typ} -> typeOfH EnvH H -> {step e H e' H'} -> exists EnvH', {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' e' typ} /\ typeOfH EnvH' H'. 
 IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.  
- Beginsnum: apply Step. 
+ Beginszero: apply Step. 
+ Prem0: case Step(keep).  
+  
+ Beginssucc: apply Step. 
  Prem0: case Step(keep).  
   
  Beginstt: apply Step. 
@@ -367,7 +372,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  backchain TypeOf-irrelevanceOfEnv-H.  
  case Typing0(keep).  
  TypeOfVarV2: apply Typing1. 
- case Typing2(keep).  
+ TypeOfVarV: case Typing2(keep).  
  witness EnvH.  
  split.  
  search.  
@@ -375,7 +380,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  backchain TypeOf-irrelevanceOfEnv-H.  
  TypeOfVarL1: case Typing0(keep).  
  TypeOfVarV2: apply Typing1. 
- case Typing2(keep).  
+ TypeOfVarV: case Typing2(keep).  
  TypeOfH': apply TypeOf-updateH to TypeOfH TypeOfVarL1 TypeOfVarV2 Prem0.  
  witness EnvH.  
  split.  

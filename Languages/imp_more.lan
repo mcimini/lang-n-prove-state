@@ -2,6 +2,7 @@ State { Heap H }
 Type T ::= (int) | (bool) | (refH T) | (unitT) | (list T)
 Expression E ::= x | (num N)  | (tt) | (ff) | (nilL) | (consL E E) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (repeat E E) | (for E E E E) | (foreach E (x)E) | (seq E E) | (labelH L) | (unit) 
 Value V ::=  (num N)  | (tt) | (ff) | (unit)  | (labelH L)
+FiniteIntegers N ::= (i0) | (i1) | (i2) | (i3) | (i4) | (i5) | (i6) 
 Error ::=
 Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (while C e) | (seq C e) 
 Relation R ::= (step E H E H)

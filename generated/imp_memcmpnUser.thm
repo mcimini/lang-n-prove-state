@@ -7,7 +7,12 @@ Theorem Find-type-user-defined-addition:
 	{typeOf nilEnvT EnvH V1 int} -> 
 	{typeOf nilEnvT EnvH V2 int} -> 
 	{typeOf nilEnvT EnvH V3 int}. 
-intros. case H1. search.  
+induction on 1. 
+intros. case H1. 
+search.  
+case H2. 
+apply IH to H4 H5 H3. 
+search.  
 
 
 Theorem Find-type-user-defined-equality: 
@@ -17,7 +22,9 @@ Theorem Find-type-user-defined-equality:
 	{typeOf nilEnvT EnvH V1 int} -> 
 	{typeOf nilEnvT EnvH V2 int} -> 
 	{typeOf nilEnvT EnvH V3 bool}. 
-intros. case H1. search.  
+intros. case H1.
+search.  
+
 
 Theorem Find-type-user-defined-inequality: 
 	%assert 
@@ -26,5 +33,9 @@ Theorem Find-type-user-defined-inequality:
 	{typeOf nilEnvT EnvH V1 int} -> 
 	{typeOf nilEnvT EnvH V2 int} -> 
 	{typeOf nilEnvT EnvH V3 bool}. 
+induction on 1. 
 intros. case H1. search. search.
-
+case H2. 
+case H3. 
+apply IH to H4 H5 H6. 
+search. 

@@ -1,12 +1,13 @@
 State { Heap H }
 Type T ::= (int) | (bool) | (refH T) | (unitT)
-Expression E ::= (num N)  | (tt) | (ff) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (seq E E) | (emptyList) | (cons E E) | (memcmpn E E E) | (labelH L) | (unit) | (error)
-Value V ::=  (num N)  | (tt) | (ff) | (unit)  | (labelH L)
+Expression E ::= (zero) | (succ E) | (tt) | (ff) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (seq E E) | (emptyList) | (cons E E) | (memcmpn E E E) | (labelH L) | (unit) | (error)
+Value V ::=  (zero) | (succ V) | (tt) | (ff) | (unit)  | (labelH L)
 Error ::=
 Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (seq C e)  
 Relation R ::= (step E H E H)
 .
-Gamma ; EnvH |- (num N) : (int). 
+Gamma ; EnvH |- (zero ) : (int ).
+Gamma ; EnvH |- (succ E): (int) <== Gamma ; EnvH |- E : (int).
 Gamma ; EnvH |- (tt) : (bool). 
 Gamma ; EnvH |- (ff) : (bool). 
 Gamma ; EnvH |- (plus E1 E2) : (int) <== Gamma ; EnvH |- E1 : (int) /\ Gamma ; EnvH |- E2 : (int).
@@ -39,16 +40,16 @@ Gamma ; EnvH |- (error ) : T.
 
 (memcmpn V1 V2 (zero)) ; H --> (tt); H. 
 
-(memcmpn (emptyList) V2 (num (one))) ; H --> (error); H. 
+(memcmpn (emptyList) V2 (succ V)) ; H --> (error); H. 
 
-(memcmpn (cons (label L1) V1) (emptyList) (num (one))) ; H --> (error); H. 
+(memcmpn (cons (label L1) V1) (emptyList) (succ V)) ; H --> (error); H. 
 
-(memcmpn (cons (label L1) V1) (cons (label LL2) V2) (num (one))) ; H --> (memcmpn V1 V2 (num (zero))) ; H <== 
+(memcmpn (cons (label L1) V1) (cons (label LL2) V2) (succ V)) ; H --> (memcmpn V1 V2 V) ; H <== 
 	V11 <- H(L1) /\
 	V22 <- H(LL2) /\	
 	user-defined (equality V11 V22 V3) /\ value V11 /\ value V22 /\ value V3. 
 
-(memcmpn (cons (label L1) V1) (cons (label LL2) V2) (num (one))) ; H --> (ff) ; H <== 
+(memcmpn (cons (label L1) V1) (cons (label LL2) V2) (succ V)) ; H --> (ff) ; H <== 
 	V11 <- H(L1) /\
 	V22 <- H(LL2) /\	
 	user-defined (inequality V11 V22 V3). 

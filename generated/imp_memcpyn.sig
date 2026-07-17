@@ -34,11 +34,8 @@ type list typ -> typ.
 type cons term -> term -> term.
 type emptyList term.
 
-kind number type. 
-type zero number. 
-type one number.
-
-type num number -> term.
+type zero term.
+type succ term -> term.
 type tt term.
 type ff term.
 type unit term.

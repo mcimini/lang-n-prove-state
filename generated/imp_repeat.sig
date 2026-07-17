@@ -33,10 +33,16 @@ type list typ -> typ.
 type nilL term.
 type consL term -> term -> term.
 
-kind number type. 
-type zero number. 
+kind finiteInteger type.
+type num finiteInteger -> term.
+type  i0 finiteInteger. 
+type  i1 finiteInteger. 
+type  i2 finiteInteger. 
+type  i3 finiteInteger. 
+type  i4 finiteInteger. 
+type  i5 finiteInteger. 
+type  i6 finiteInteger. 
 
-type num number -> term.
 type tt term.
 type ff term.
 type unit term.

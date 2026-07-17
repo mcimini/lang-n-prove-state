@@ -1,12 +1,13 @@
 State { Heap H }
 Type T ::= (int) | (bool) | (refH T) | (unitT)
-Expression E ::= (num N)  | (tt) | (ff) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (seq E E) | (emptyList) | (cons E E) | (memcpyn E E E) | (labelH L) | (unit) | (error)
-Value V ::=  (num N)  | (tt) | (ff) | (unit)  | (labelH L)
+Expression E ::= (zero) | (succ E) | (tt) | (ff) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (seq E E) | (emptyList) | (cons E E) | (memcpyn E E E) | (labelH L) | (unit) | (error)
+Value V ::=  (zero) | (succ V) | (tt) | (ff) | (unit)  | (labelH L)
 Error ::=
 Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (seq C e)  
 Relation R ::= (step E H E H)
 .
-Gamma ; EnvH |- (num N) : (int). 
+Gamma ; EnvH |- (zero ) : (int ).
+Gamma ; EnvH |- (succ E): (int) <== Gamma ; EnvH |- E : (int).
 Gamma ; EnvH |- (tt) : (bool). 
 Gamma ; EnvH |- (ff) : (bool). 
 Gamma ; EnvH |- (plus E1 E2) : (int) <== Gamma ; EnvH |- E1 : (int) /\ Gamma ; EnvH |- E2 : (int).
@@ -37,12 +38,12 @@ Gamma ; EnvH |- (error ) : T.
 (while E1 E2); H --> (if E1 (seq E2 (while E1 E2)) (unit)); H. 
 (seq (unit) E2); H --> E2; H. 
 
-(memcpyn V1 V2 (num (zero))) ; H --> (unit); H. 
+(memcpyn V1 V2 (zero)) ; H --> (unit); H. 
 
-(memcpyn (emptyList) V2 (num (one))) ; H --> (error); H. 
+(memcpyn (emptyList) V2 (succ V)) ; H --> (error); H. 
 
-(memcpyn (cons (label L1) V1) (emptyList) (num (one))) ; H --> (error); H. 
+(memcpyn (cons (label L1) V1) (emptyList) (succ V)) ; H --> (error); H. 
 
-(memcpyn (cons (label L1) V1) (cons (label LL2) V2) (num (one))) ; H --> (memcpyn V1 V2 V); H' <== 
+(memcpyn (cons (label L1) V1) (cons (label LL2) V2) (succ V)) ; H --> (memcpyn V1 V2 V); H' <== 
 	V3 <- H(L1)  /\ 
 	H' <- H[LL2|->V3].

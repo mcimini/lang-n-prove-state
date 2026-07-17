@@ -82,6 +82,102 @@ step (seq E1 E2) MU1  (seq E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 
 step (while E1 E2) MU1  (while E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 
-addition (num zero) (num zero) (num zero).
-equality V V tt.
+addition (num i0) (num i0) (num i0).
+addition (num i0) (num i1) (num i1).
+addition (num i0) (num i2) (num i2).
+addition (num i0) (num i3) (num i3).
+addition (num i0) (num i4) (num i4).
+addition (num i0) (num i5) (num i5).
+addition (num i0) (num i6) (num i6).
+addition (num i1) (num i0) (num i1).
+addition (num i1) (num i1) (num i2).
+addition (num i1) (num i2) (num i3).
+addition (num i1) (num i3) (num i4).
+addition (num i1) (num i4) (num i5).
+addition (num i1) (num i5) (num i6).
+addition (num i1) (num i6) (num i6).
+addition (num i2) (num i0) (num i2).
+addition (num i2) (num i1) (num i3).
+addition (num i2) (num i2) (num i4).
+addition (num i2) (num i3) (num i5).
+addition (num i2) (num i4) (num i6).
+addition (num i2) (num i5) (num i6).
+addition (num i2) (num i6) (num i6).
+addition (num i3) (num i0) (num i3).
+addition (num i3) (num i1) (num i4).
+addition (num i3) (num i2) (num i5).
+addition (num i3) (num i3) (num i6).
+addition (num i3) (num i4) (num i6).
+addition (num i3) (num i5) (num i6).
+addition (num i3) (num i6) (num i6).
+addition (num i4) (num i0) (num i4).
+addition (num i4) (num i1) (num i5).
+addition (num i4) (num i2) (num i6).
+addition (num i4) (num i3) (num i6).
+addition (num i4) (num i4) (num i6).
+addition (num i4) (num i5) (num i6).
+addition (num i4) (num i6) (num i6).
+addition (num i5) (num i0) (num i5).
+addition (num i5) (num i1) (num i6).
+addition (num i5) (num i2) (num i6).
+addition (num i5) (num i3) (num i6).
+addition (num i5) (num i4) (num i6).
+addition (num i5) (num i5) (num i6).
+addition (num i5) (num i6) (num i6).
+addition (num i6) (num i0) (num i6).
+addition (num i6) (num i1) (num i6).
+addition (num i6) (num i2) (num i6).
+addition (num i6) (num i3) (num i6).
+addition (num i6) (num i4) (num i6).
+addition (num i6) (num i5) (num i6).
+addition (num i6) (num i6) (num i6).
 
+equality(num i0) (num i0) tt.
+equality(num i0) (num i1) ff.
+equality(num i0) (num i2) ff.
+equality(num i0) (num i3) ff.
+equality(num i0) (num i4) ff.
+equality(num i0) (num i5) ff.
+equality(num i0) (num i6) ff.
+equality(num i1) (num i0) ff.
+equality(num i1) (num i1) tt.
+equality(num i1) (num i2) ff.
+equality(num i1) (num i3) ff.
+equality(num i1) (num i4) ff.
+equality(num i1) (num i5) ff.
+equality(num i1) (num i6) ff.
+equality(num i2) (num i0) ff.
+equality(num i2) (num i1) ff.
+equality(num i2) (num i2) tt.
+equality(num i2) (num i3) ff.
+equality(num i2) (num i4) ff.
+equality(num i2) (num i5) ff.
+equality(num i2) (num i6) ff.
+equality(num i3) (num i0) ff.
+equality(num i3) (num i1) ff.
+equality(num i3) (num i2) ff.
+equality(num i3) (num i3) tt.
+equality(num i3) (num i4) ff.
+equality(num i3) (num i5) ff.
+equality(num i3) (num i6) ff.
+equality(num i4) (num i0) ff.
+equality(num i4) (num i1) ff.
+equality(num i4) (num i2) ff.
+equality(num i4) (num i3) ff.
+equality(num i4) (num i4) tt.
+equality(num i4) (num i5) ff.
+equality(num i4) (num i6) ff.
+equality(num i5) (num i0) ff.
+equality(num i5) (num i1) ff.
+equality(num i5) (num i2) ff.
+equality(num i5) (num i3) ff.
+equality(num i5) (num i4) ff.
+equality(num i5) (num i5) tt.
+equality(num i5) (num i6) ff.
+equality(num i6) (num i0) ff.
+equality(num i6) (num i1) ff.
+equality(num i6) (num i2) ff.
+equality(num i6) (num i3) ff.
+equality(num i6) (num i4) ff.
+equality(num i6) (num i5) ff.
+equality(num i6) (num i6) tt.

@@ -7,7 +7,56 @@ Theorem Find-type-user-defined-addition:
 	{typeOf nilEnvT EnvH V1 int} -> 
 	{typeOf nilEnvT EnvH V2 int} -> 
 	{typeOf nilEnvT EnvH V3 int}. 
-intros. case H1. search.  
+intros. case H1. 
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
 
 
 Theorem Find-type-user-defined-equality: 
@@ -17,4 +66,54 @@ Theorem Find-type-user-defined-equality:
 	{typeOf nilEnvT EnvH V1 int} -> 
 	{typeOf nilEnvT EnvH V2 int} -> 
 	{typeOf nilEnvT EnvH V3 bool}. 
-intros. case H1. search.  
+intros. case H1.
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+search.  
+

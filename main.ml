@@ -236,4 +236,19 @@ let print_equality_for_abella op =
 					let aux1 i = List.map (aux2 i) [0;1;2;3;4;5;6] in 
 					 List.map aux1 [0;1;2;3;4;5;6]
 
+let print_equality_for_abella op = 
+					let aux2 i1 i2 = let (sumEq,sumIneq) = if i1 = i2 then (0,1) else (1,0) in 
+					let i1s = "(num i" ^ string_of_int i1 ^ ")" in let i2s = "(num i" ^ string_of_int i2 ^ ")" in 
+					(* 
+						let sumEqs = "(num i" ^ string_of_int sumEq ^ ")" in 
+					let sumIneqs = "(num i" ^ string_of_int sumIneq ^ ")" in 
+						*)
+						let sumEqs = if i1 = i2 then "tt" else "ff" in 
+						print_string ("equality" ^ i1s ^ " "  ^ i2s ^ " " ^ sumEqs ^ ".\n") 
+					(*	;
+						print_string ("inequality" ^ i1s ^ " "  ^ i2s ^ " " ^ sumIneqs ^ ".\n") ; *)
+					  in 
+					let aux1 i = List.map (aux2 i) [0;1;2;3;4;5;6] in 
+					 List.map aux1 [0;1;2;3;4;5;6]
+
 *)

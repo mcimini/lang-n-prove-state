@@ -29,10 +29,16 @@ type bool typ.
 type unitT typ.
 type refH typ -> typ.
 
-kind number type. 
-type zero number. 
+kind finiteInteger type.
+type num finiteInteger -> term.
+type  i0 finiteInteger. 
+type  i1 finiteInteger. 
+type  i2 finiteInteger. 
+type  i3 finiteInteger. 
+type  i4 finiteInteger. 
+type  i5 finiteInteger. 
+type  i6 finiteInteger. 
 
-type num number -> term.
 type tt term.
 type ff term.
 type unit term.
@@ -45,8 +51,10 @@ type while term -> term -> term.
 type seq term -> term -> term.
 type if term -> term -> term -> term.
 
+
 type value term -> o.
 type step term -> mapH -> term -> mapH -> o.
+
 
 kind envT type.
 type nilEnvT envT.
