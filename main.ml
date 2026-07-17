@@ -155,6 +155,7 @@ let applySchemaToAllLanguages filenameSchema =
 	let schema = parseTheSchema filenameSchema in 
 		List.map (applySchemaToOneLang schema) languagesFromRepo 
 
+
 let applyAllSchemasToOneLanguages_to_file filenameLan = 	
 	let schemas = List.map parseTheSchema repoOfSchemas in 
 	let initialSchemas = List.map parseTheSchema repoOfInitialSchemas in 
@@ -199,7 +200,6 @@ let applyAllSchemasToOneLanguages_to_file filenameLan =
 	output_string mod_file (language_prettyPrintRules lan); 
     close_out mod_file;
 		*)
-		
     print_endline ("Proofs generated in ./generated/" ^ nameOfLanguage ^ ".thm");;
 	
 let () = List.hd (List.map applyAllSchemasToOneLanguages_to_file languagesFromRepo);;
@@ -212,5 +212,28 @@ let () = match Array.to_list Sys.argv with
 			let folder : string = Sys.argv.(1) in 
 			List.hd (List.map (applyAllQueriesToOneLanguages_to_file folder) (languagesFromRepo folder));
 		| otherwise -> print_endline ("Command line error: Too many arguments to Lang-SQL");
+
+
+some code taken out. 
+		print_op_for_abella (+) "addition";	
+		let mult a b = a * b in print_op_for_abella mult "multiplication";	
+		List.map (fun x -> print_string "search.\n") (List.init 49 (fun x -> x));
+		print_equality_for_abella "equality";	
+
+let print_op_for_abella (f : int -> int -> int) op = 
+						let aux2 i1 i2 = let sum = if (f i1 i2) > 6 then 6 else (f i1 i2) in let i1s = "(num i" ^ string_of_int i1 ^ ")" in let i2s = "(num i" ^ string_of_int i2 ^ ")" in let sums = "(num i" ^ string_of_int sum ^ ")" in 
+							print_string (op ^ i1s ^ " "  ^ i2s ^ " " ^ sums ^ ".\n")   in 
+						let aux1 i = List.map (aux2 i) [0;1;2;3;4;5;6] in 
+						 List.map aux1 [0;1;2;3;4;5;6]
+
+let print_equality_for_abella op = 
+					let aux2 i1 i2 = let (sumEq,sumIneq) = if i1 = i2 then (0,1) else (1,0) in let i1s = "(num i" ^ string_of_int i1 ^ ")" in let i2s = "(num i" ^ string_of_int i2 ^ ")" in 
+					let sumEqs = "(num i" ^ string_of_int sumEq ^ ")" in 
+					let sumIneqs = "(num i" ^ string_of_int sumIneq ^ ")" in 
+						print_string ("equality" ^ i1s ^ " "  ^ i2s ^ " " ^ sumEqs ^ ".\n") ;
+						print_string ("inequality" ^ i1s ^ " "  ^ i2s ^ " " ^ sumIneqs ^ ".\n") ;
+					  in 
+					let aux1 i = List.map (aux2 i) [0;1;2;3;4;5;6] in 
+					 List.map aux1 [0;1;2;3;4;5;6]
 
 *)

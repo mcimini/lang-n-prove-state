@@ -364,7 +364,7 @@ intros Main.
 
 Theorem Type-preservation: forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R', {typeOf (nilEnvT) EnvH EnvR e typ} -> typeOfH EnvH EnvR H -> typeOfR EnvH EnvR R -> {step e H R e' H' R'} -> exists EnvH', exists EnvR', {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' EnvR' e' typ} /\ typeOfH EnvH' EnvR' H' /\ typeOfR EnvH' EnvR' R'. 
 IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.  
- Beginszero: apply Step. 
+ Beginsnum: apply Step. 
  Prem0: case Step(keep).  
   
  Beginshalt: apply Step. 

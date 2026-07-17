@@ -17,7 +17,6 @@ IH0 : induction on 1. intros Main Subset. case Main.
  Typing0: case Main(keep).  
  search.  
  search.  
- search.  
  Madd: apply IH0 to Typing2 Subset2.  
  Madd: apply IH0 to Typing3 Subset2.  
  search.  
@@ -48,8 +47,6 @@ IH0 : induction on 1. intros Main Subset. case Main.
 Theorem Irrelevance-Env-for-ValueTyping-R: forall EnvH, forall EnvR, forall v, forall t, forall EnvR', {typeOf (nilEnvT) EnvH EnvR v t} -> {value v} -> {typeOf (nilEnvT) EnvH EnvR' v t}. 
 intros TypeOf ValueHyp.  
  case ValueHyp(keep).  
- case TypeOf(keep).  
- search.  
  case TypeOf(keep).  
  search.  
  case TypeOf(keep).  
@@ -364,8 +361,6 @@ intros Main.
  case H2(keep).  
  search.  
  case H2(keep).  
- search.  
- case H2(keep).  
  search. 
 
 
@@ -376,10 +371,7 @@ intros Main.
 
 Theorem Type-preservation: forall EnvH, forall EnvR, forall e, forall typ, forall H, forall R, forall e', forall H', forall R', {typeOf (nilEnvT) EnvH EnvR e typ} -> typeOfH EnvH EnvR H -> typeOfR EnvH EnvR R -> {step e H R e' H' R'} -> exists EnvH', exists EnvR', {subsetEnvH EnvH EnvH'} /\ {typeOf (nilEnvT) EnvH' EnvR' e' typ} /\ typeOfH EnvH' EnvR' H' /\ typeOfR EnvH' EnvR' R'. 
 IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.  
- Beginszero: apply Step. 
- Prem0: case Step(keep).  
-  
- Beginsone: apply Step. 
+ Beginsnum: apply Step. 
  Prem0: case Step(keep).  
   
  Beginshalt: apply Step. 
@@ -531,8 +523,8 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  TypeOfVarZs: apply Typing0. 
  TypeOfVarL: apply Typing1. 
  TypeOfVarE2: apply Typing2. 
- TypeOfVarzero: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
- case TypeOfVarzero(keep).  
+ TypeOfVarnum: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
+ case TypeOfVarnum(keep).  
  TypeOfVarcode: apply Find-type-in-envH to Prem1 TypeOfH TypeOfVarL with EnvR = EnvR.  
  case TypeOfVarcode(keep).  
  witness EnvH.  
@@ -545,8 +537,8 @@ IH0 : induction on 1. intros Main TypeOfH TypeOfR Step. Typing0: case Main.
  TypeOfVarZs: apply Typing0. 
  TypeOfVarL: apply Typing1. 
  TypeOfVarE: apply Typing2. 
- TypeOfVarone: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
- case TypeOfVarone(keep).  
+ TypeOfVarnum: apply Find-type-in-env-byLookupR to Prem0 TypeOfR TypeOfVarZs with EnvH = EnvH.  
+ case TypeOfVarnum(keep).  
  witness EnvH.  
  witness EnvR.  
  split.  

@@ -9,7 +9,56 @@ Theorem Find-type-user-defined-addition:
 	{typeOf nilEnvT EnvH EnvR V3 int}. 
 intros. 
 case H1. 
-search. 
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+
 
 Theorem Find-type-user-defined-multiplication: 
 	%assert 
@@ -20,22 +69,53 @@ Theorem Find-type-user-defined-multiplication:
 	{typeOf nilEnvT EnvH EnvR V3 int}. 
 intros. 
 case H1. 
-search. 
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
+search.
 
-Theorem Find-type-user-defined-equality: 
-	%assert 
-	forall EnvH EnvR V1 V2 V3, 
-	{equality V1 V2 V3} -> 
-	{typeOf nilEnvT EnvH EnvR V1 int} -> 
-	{typeOf nilEnvT EnvH EnvR V2 int} -> 
-	{typeOf nilEnvT EnvH EnvR V3 int}. 
-skip. 
-
-Theorem Find-type-user-defined-inequality: 
-	%assert 
-	forall EnvH EnvR V1 V2 V3, 
-	{inequality V1 V2 V3} -> 
-	{typeOf nilEnvT EnvH EnvR V1 int} -> 
-	{typeOf nilEnvT EnvH EnvR V2 int} -> 
-	{typeOf nilEnvT EnvH EnvR V3 int}. 
-skip. 

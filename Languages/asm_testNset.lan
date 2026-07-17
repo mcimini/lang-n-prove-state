@@ -1,14 +1,14 @@
 State { Heap H, RegisterFile R with key = Z (strong updates) }
 Register Z ::= (r1) | (r2) | (r3) | (r4) | (r5) | (r6) 
 Type T ::= (int) | (refH T) | (unitT) | (codeT NvrR)
-Expression E ::= x | (zero) | (one) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (jmp E) | (bnz Z E E) | (code NvrR E) | (testNset Z E E E) | (labelH L) 
-Value V ::= (halt) | (zero) | (one) | (labelH L) 
+Expression E ::= x | (num I) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (jmp E) | (bnz Z E E) | (code NvrR E) | (testNset Z E E E) | (labelH L) 
+Value V ::= (halt) | (num I) | (labelH L) 
+FiniteIntegers I ::= (i0) | (i1) | (i2) | (i3) | (i4) | (i5) | (i6) 
 Relation R ::= (step E H R E H R)
 Error ::=
 Context C ::= [] | 
 .
-Gamma ; EnvH ; EnvR |- (zero) : (int). 
-Gamma ; EnvH ; EnvR |- (one) : (int). 
+Gamma ; EnvH ; EnvR |- (num I) : (int). 
 Gamma ; EnvH ; EnvR |- (halt) : (unitT). 
 Gamma ; EnvH ; EnvR |- (add Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
 Gamma ; EnvH ; EnvR |- (mult Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
@@ -62,11 +62,11 @@ Gamma ; EnvH ; EnvR |- (labelH L) : (refH T) <== T <- EnvH(L).
 	(code EnvR E) <- H(L).
 
 (bnz Zs (labelH L) E2); H ; R --> E1; H ; R <== 
-	(zero) <- R(Zs) /\
+	(num (i0)) <- R(Zs) /\
 	(code EnvR E1) <- H(L).
 	
 (bnz Zs (labelH L) E); H ; R --> E; H ; R <== 
-	(one) <- R(Zs).
+	(num (i1)) <- R(Zs).
 
 (testNset Zd (labelH L) V2 E); H ; R --> E; H' ; R' <== 
 	V <- H(L) /\
