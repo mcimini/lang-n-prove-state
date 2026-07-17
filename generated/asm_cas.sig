@@ -35,6 +35,10 @@ kind register type.
 
 type r1 register. 
 type r2 register. 
+type r3 register. 
+type r4 register. 
+type r5 register. 
+type r6 register. 
 
 kind mapR type.
 type nilMapR mapR.

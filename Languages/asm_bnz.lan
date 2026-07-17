@@ -1,5 +1,5 @@
 State { Heap H, RegisterFile R with key = Z (strong updates) }
-Register Z ::= (r1) | (r2) 
+Register Z ::= (r1) | (r2) | (r3) | (r4) | (r5) | (r6) 
 Type T ::= (int) | (refH T) | (unitT) | (codeT NvrR)
 Expression E ::= x | (zero) | (one) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (bnz Z E E) | (code NvrR E) | (labelH L) 
 Value V ::= (halt) | (zero) | (one) | (labelH L) 
