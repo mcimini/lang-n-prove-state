@@ -44,6 +44,15 @@ To test the results of ./lnp (i.e. to test the proofs that Lang-n-Prove has gene
 <li> After one run of ./testAll.sh, Abella generates required .thc files for user-defined predicates. After that, users can manually run Abella on the Abella proofs they are interested to check. Example: <b>cd generated; abella asm.thm </b>
 </ul>
 
+<br />
+Quick remark: We refer to Languages/asm_jmp_bnz.lan as "a simple typed assembly language" (STAL). 
+<br />
+<br />
+
+
+
+
+
 To clean: <br />
 <ul>
 <li> make clean 
