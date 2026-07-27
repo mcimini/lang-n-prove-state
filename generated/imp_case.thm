@@ -219,7 +219,22 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
   
  BeginsconsL: apply Step. 
  Prem0: case Step(keep).  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
   
+ apply Type-state-envs-weakening-H  to Typing1 MapEnvSubset0 .  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing1 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
+ apply Type-state-envs-weakening-H  to Typing0 MapEnvSubset0 .  
+  
+ search.  
+ search.  
  Beginsplus: apply Step. 
  Prem0: case Step(keep).  
  TypeOfVarV1: apply Typing0. 
@@ -352,7 +367,26 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
   
+ apply Type-state-envs-weakening-H  to Typing1 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing2 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing3 MapEnvSubset0 .  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing1 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
+ apply Type-state-envs-weakening-H  to Typing0 MapEnvSubset0 .  
+  
+ apply Type-state-envs-weakening-H  to Typing2 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing3 MapEnvSubset0 .  
+ search.  
+ search.  
  Beginscase2: apply Step. 
  Prem0: case Step(keep).  
  TypeOfVarV: apply Typing0. 
@@ -366,7 +400,30 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
   
+ apply Type-state-envs-weakening-H  to Typing1 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing2 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing3 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing4 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing5 MapEnvSubset0 .  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing1 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
+ apply Type-state-envs-weakening-H  to Typing0 MapEnvSubset0 .  
+  
+ apply Type-state-envs-weakening-H  to Typing2 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing3 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing4 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing5 MapEnvSubset0 .  
+ search.  
+ search.  
  Beginscase3: apply Step. 
  Prem0: case Step(keep).  
  TypeOfVarV: apply Typing0. 
@@ -382,7 +439,34 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
   
+ apply Type-state-envs-weakening-H  to Typing1 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing2 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing3 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing4 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing5 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing6 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing7 MapEnvSubset0 .  
+ search.  
+ search.  
+ MapEnvSubset0: apply IH0 to Typing1 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
+ apply Type-state-envs-weakening-H  to Typing0 MapEnvSubset0 .  
+  
+ apply Type-state-envs-weakening-H  to Typing2 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing3 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing4 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing5 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing6 MapEnvSubset0 .  
+ apply Type-state-envs-weakening-H  to Typing7 MapEnvSubset0 .  
+ search.  
+ search.  
  Beginsseq: apply Step. 
  Prem0: case Step(keep).  
  case Typing0(keep).  

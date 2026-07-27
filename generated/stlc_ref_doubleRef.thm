@@ -288,7 +288,12 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
-  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
+ search.  
+ search.  
  BeginsdoubleDeref: apply Step. 
  Prem0: case Step(keep).  
  TypeOfVarL: apply Typing0. 
@@ -301,7 +306,12 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
-  
+ MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
+ witness EnvH'.  
+ split.  
+ search.  
+ search.  
+ search.  
  BeginsL1: apply Step. 
  Prem0: case Step(keep).  
   

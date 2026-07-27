@@ -111,7 +111,6 @@ step (store Zd Zs E) H R E H' R :-
 	lookupMapR R Zs V, 
 	updateMapH H L V H'. 
 
-value (halt).
 value (num I).
 value (labelH L).
 

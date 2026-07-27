@@ -332,14 +332,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  search.  
  backchain Type-state-envs-weakening-H.  
  backchain TypeOf-irrelevanceOfEnv-H.  
- MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
- witness EnvH'.  
- split.  
- search.  
   
- apply Type-state-envs-weakening-H  to Typing1 MapEnvSubset0 .  
- search.  
- search.  
  Beginsseq: apply Step. 
  Prem0: case Step(keep).  
  case Typing0(keep).  

@@ -59,7 +59,11 @@ value (tt).
 value (ff).
 value (unit).
 value (labelH L).
+value (nilL).
+value (consL E1 E2) :- value E2, value E1.
 
+step (consL E1 E2) MU1  (consL E1' E2) MU1' :- step E1 MU1  E1' MU1'.
+step (consL E1 E2) MU1  (consL E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
 step (plus E1 E2) MU1  (plus E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (plus E1 E2) MU1  (plus E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
 step (equal E1 E2) MU1  (equal E1' E2) MU1' :- step E1 MU1  E1' MU1'.

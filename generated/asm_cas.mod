@@ -164,7 +164,6 @@ step (cas Zd (labelH L1) (labelH L2) V E) H R E H R' :-
 	
 
 
-value (halt).
 value (num I).
 value (labelH L).
 

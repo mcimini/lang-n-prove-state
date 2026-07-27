@@ -61,3 +61,5 @@ step (ref E1) MU1  (ref E1') MU1' :- step E1 MU1  E1' MU1'.
 step (deref E) MU1  (deref E') MU1' :- step E MU1  E' MU1'.
 step (assign E1 E2) MU1  (assign E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (assign E1 E2) MU1  (assign E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
+step (doubleRef E1) MU1  (doubleRef E1') MU1' :- step E1 MU1  E1' MU1'.
+step (doubleDeref E) MU1  (doubleDeref E') MU1' :- step E MU1  E' MU1'.

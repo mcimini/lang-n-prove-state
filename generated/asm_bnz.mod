@@ -130,7 +130,6 @@ step (bnz Zs (labelH L) E) H R E H R :-
 	lookupMapR R Zs (num i1).
 
 
-value (halt).
 value (num I).
 value (labelH L).
 

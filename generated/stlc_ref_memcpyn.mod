@@ -69,3 +69,7 @@ step (ref E1) MU1  (ref E1') MU1' :- step E1 MU1  E1' MU1'.
 step (deref E) MU1  (deref E') MU1' :- step E MU1  E' MU1'.
 step (assign E1 E2) MU1  (assign E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (assign E1 E2) MU1  (assign E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
+step (memcpyn E1 E2 E3) MU1  (memcpyn E1' E2 E3) MU1' :- step E1 MU1  E1' MU1'.
+step (memcpyn E1 E2 E3) MU1  (memcpyn E1 E2' E3) MU1' :- step E2 MU1  E2' MU1', value E1.
+step (memcpyn E1 E2 E3) MU1  (memcpyn E1 E2 E3') MU1' :- step E3 MU1  E3' MU1', value E2, value E1.
+

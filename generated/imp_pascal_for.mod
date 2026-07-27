@@ -58,7 +58,11 @@ value (tt).
 value (ff).
 value (unit).
 value (labelH L).
+value (nilL).
+value (consL E1 E2) :- value E2, value E1.
 
+step (consL E1 E2) MU1  (consL E1' E2) MU1' :- step E1 MU1  E1' MU1'.
+step (consL E1 E2) MU1  (consL E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
 step (plus E1 E2) MU1  (plus E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (plus E1 E2) MU1  (plus E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
 step (equal E1 E2) MU1  (equal E1' E2) MU1' :- step E1 MU1  E1' MU1'.
@@ -68,6 +72,9 @@ step (assign E1 E2) MU1  (assign E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (assign E1 E2) MU1  (assign E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
 step (if E1 E2 E3) MU1  (if E1' E2 E3) MU1' :- step E1 MU1  E1' MU1'.
 step (seq E1 E2) MU1  (seq E1' E2) MU1' :- step E1 MU1  E1' MU1'.
+step (pascal_for E1 E2 E3 E4) MU1  (pascal_for E1' E2 E3 E4) MU1' :- step E1 MU1  E1' MU1'.
+step (pascal_for E1 E2 E3 E4) MU1  (pascal_for E1 E2' E3 E4) MU1' :- step E2 MU1  E2' MU1', value E1.
+step (pascal_for E1 E2 E3 E4) MU1  (pascal_for E1 E2 E3' E4) MU1' :- step E3 MU1  E3' MU1', value E2, value E1.
 
 
 addition (num i0) (num i0) (num i0).

@@ -148,7 +148,6 @@ step (testNset Zd (labelH L) V2 E) H R E H' R' :-
 	value V2. 
 
 
-value (halt).
 value (num I).
 value (labelH L).
 

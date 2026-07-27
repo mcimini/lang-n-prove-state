@@ -121,7 +121,6 @@ step (store Zd Zs E) H R E H' R :-
 step (jmp (labelH L)) H R E H R :- 
 	lookupMapH H L (code EnvR E).
 
-value (halt).
 value (num I).
 value (labelH L).
 

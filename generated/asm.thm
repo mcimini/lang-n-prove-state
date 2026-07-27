@@ -43,8 +43,6 @@ intros TypeOf ValueHyp.
  case TypeOf(keep).  
  search.  
  case TypeOf(keep).  
- search.  
- case TypeOf(keep).  
  search. 
 
 
@@ -349,8 +347,6 @@ intros Main.
  apply Store-stores-values-H to H1.  
  witness e.  
  case H3(keep).  
- case H2(keep).  
- search.  
  case H2(keep).  
  search.  
  case H2(keep).  

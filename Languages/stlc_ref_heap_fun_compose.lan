@@ -3,7 +3,7 @@ Type T ::= (arrow T T) | (refH T) | (unitT)
 Expression E ::= x | (abs T (x)E) | (app E E) | (ref E) | (deref E) | (assign E E) | (heap_fun_compose E E E) | (labelH L) | (unit) 
 Value V ::= (abs T R) | (labelH L) | (unit)
 Error ::=
-Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) 
+Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) | (heap_fun_compose C e e) | (heap_fun_compose v C e) | (heap_fun_compose v v C) 
 Relation R ::= (step E H E H)
 .
 Gamma ; EnvH |- (abs T1 R) : (arrow T1 T2) <== Gamma, x : T1 ; EnvH |- R : T2.

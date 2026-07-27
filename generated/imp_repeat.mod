@@ -68,7 +68,6 @@ step (assign E1 E2) MU1  (assign E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1
 step (if E1 E2 E3) MU1  (if E1' E2 E3) MU1' :- step E1 MU1  E1' MU1'.
 step (seq E1 E2) MU1  (seq E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 
-step (repeat E1 E2) MU1  (repeat E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 
 addition (num i0) (num i0) (num i0).
 addition (num i0) (num i1) (num i1).

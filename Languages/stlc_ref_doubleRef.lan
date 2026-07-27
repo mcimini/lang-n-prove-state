@@ -3,7 +3,7 @@ Type T ::= (arrow T T) | (refH T) | (unitT) | (pairType T T)
 Expression E ::= x | (abs T (x)E) | (app E E) | (ref E) | (deref E) | (assign E E) | (pair E E) | (doubleRef E) | (doubleDeref E) | (labelH L) | (unit) 
 Value V ::= (abs T R) | (labelH L) | (unit) | (pair V1 V2)
 Error ::=
-Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) 
+Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) | (doubleRef C) | (doubleDeref C) 
 Relation R ::= (step E H E H)
 .
 Gamma ; EnvH |- (abs T1 R) : (arrow T1 T2) <== Gamma, x : T1 ; EnvH |- R : T2.

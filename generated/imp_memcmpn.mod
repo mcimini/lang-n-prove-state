@@ -67,6 +67,8 @@ value (tt).
 value (ff).
 value (unit).
 value (labelH L).
+value (emptyList).
+value (cons E1 E2) :- value E2, value E1.
 
 step (plus E1 E2) MU1  (plus E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (plus E1 E2) MU1  (plus E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
@@ -77,6 +79,12 @@ step (assign E1 E2) MU1  (assign E1' E2) MU1' :- step E1 MU1  E1' MU1'.
 step (assign E1 E2) MU1  (assign E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
 step (if E1 E2 E3) MU1  (if E1' E2 E3) MU1' :- step E1 MU1  E1' MU1'.
 step (seq E1 E2) MU1  (seq E1' E2) MU1' :- step E1 MU1  E1' MU1'.
+step (cons E1 E2) MU1  (cons E1' E2) MU1' :- step E1 MU1  E1' MU1'.
+step (cons E1 E2) MU1  (cons E1 E2') MU1' :- step E2 MU1  E2' MU1', value E1.
+step (memcmpn E1 E2 E3) MU1  (memcmpn E1' E2 E3) MU1' :- step E1 MU1  E1' MU1'.
+step (memcmpn E1 E2 E3) MU1  (memcmpn E1 E2' E3) MU1' :- step E2 MU1  E2' MU1', value E1.
+step (memcmpn E1 E2 E3) MU1  (memcmpn E1 E2 E3') MU1' :- step E3 MU1  E3' MU1', value E2, value E1.
+
 
 addition zero E E.
 addition (succ E1) E2 (succ E3) :- addition E1 E2 E3. 

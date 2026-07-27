@@ -1,10 +1,10 @@
 State { Heap H }
 Type T ::= (int) | (bool) | (refH T) | (unitT)
 Expression E ::= (zero) | (succ E) | (tt) | (ff) | (plus E E) | (equal E E)  | (deref E) | (assign E E)| (if E E E) | (while E E) | (seq E E) | (emptyList) | (cons E E) | (memsetn E E E) | (labelH L) | (unit) | (error)
-Value V ::=  (zero) | (succ V)  | (tt) | (ff) | (unit)  | (labelH L)
+Value V ::=  (zero) | (succ V)  | (tt) | (ff) | (unit)  | (labelH L) | (emptyList) | (cons V V)
 FiniteIntegers N ::= (i0) | (i1) | (i2) | (i3) | (i4) | (i5) | (i6) 
 Error ::=
-Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (seq C e)  
+Context C ::= [] | (plus C e) | (plus v C) | (equal C e) | (equal v C)  | (deref C) | (assign C e) | (assign v C) | (if C e e) | (seq C e) | (cons C e) | (cons v C) | (memsetn C e e) | (memsetn v C e) | (memsetn v v C) 
 Relation R ::= (step E H E H)
 .
 Gamma ; EnvH |- (zero ) : (int ).

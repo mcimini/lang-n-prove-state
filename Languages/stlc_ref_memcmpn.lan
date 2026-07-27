@@ -3,7 +3,7 @@ Type T ::= (bool) | (arrow T T) | (refH T) | (unitT)
 Expression E ::= (tt) | (ff) | x | (abs T (x)E) | (app E E) | (zero) | (succ E) | (emptyList) | (cons E E) | (ref E) | (deref E) | (assign E E) | (memcmpn E E E) | (labelH L) | (unit) | (error)
 Value V ::= (abs T R) | (labelH L) | (unit)
 Error ::= (error)
-Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) 
+Context C ::= [] | (app C e) | (app v C) | (ref C) | (deref C) | (assign C e) | (assign v C) | (memcmpn C e e) | (memcmpn v C e) | (memcmpn v v C) 
 Relation R ::= (step E H E H)
 .
 
