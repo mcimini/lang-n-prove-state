@@ -39,13 +39,13 @@ To test the results of ./lnp (i.e. to test the proofs that Lang-n-Prove has gene
 <ul>
 <li> ./testAll.sh <br />
 	This is a bash script. The command "abella" must be in the $PATH. <br />
-	The script runs the command "abella" on all the Abella proofs (.thm files) in the folder "generated". <br />
+	The script runs the command "abella" on all the Abella proofs (.thm files) in the folder with name <b>generated</b>. <br />
 	The script points out the failed proofs. (Simply terminates, if all proofs are correct).  	
 <li> After one run of ./testAll.sh, Abella generates required .thc files for user-defined predicates. After that, users can manually run Abella on the Abella proofs they are interested to check. Example: <b>cd generated; abella asm.thm </b>
 </ul>
 
 <br />
-Quick remark: We refer to Languages/asm_jmp_bnz.lan as "a simple typed assembly language" (STAL). 
+Quick remark: We refer to asm_jmp_bnz.lan in folder with name <b>Languages</b> as "a simple typed assembly language" (STAL). 
 <br />
 <br />
 
