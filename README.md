@@ -45,7 +45,7 @@ To test the results of ./lnp (i.e. to test the proofs that Lang-n-Prove has gene
 </ul>
 
 <br />
-Quick remark: We refer to asm_jmp_bnz.lan in folder with name <b>Languages</b> as "a simple typed assembly language" (STAL). 
+Quick remark: We refer to <b>asm_jmp_bnz.lan</b> in folder with name <b>Languages</b> as "a simple typed assembly language" (STAL). 
 <br />
 <br />
 
