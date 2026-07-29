@@ -84,9 +84,9 @@ let typeSoundnessState = [
 ; *)
 (* "./typeOf-add.lnp"
 ; *)
-"typeOf-irrelevanceOfEnv.lnp"
+"typeOf-weakening.lnp"
 ; 
-"typeOf-irrelevanceOfEnv_trivial.lnp"
+"typeOf-weakening.lnp_trivial.lnp"
 ; 
 "preservation-state.lnp" 
 ]

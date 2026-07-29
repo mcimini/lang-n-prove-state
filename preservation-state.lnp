@@ -34,12 +34,12 @@ for each e in Expression:
 						else 
 							if p.strongupdate then TypeOf_(p.output) : 
 								 apply TypeOf-strong-update_(p.state) to TypeOf_(p.inputState) Typing_(p.envPremise[e]) TypeOfVar_(p.inserted) Prem_(p). 
-								 for each s in p.state.otherStates : TypeOf_(s) : apply TypeOf-irrelevanceOfEnv-_(s) to TypeOf_(s) with env=p.newEnv, env=p.newEnv. endfor
+								 for each s in p.state.otherStates : TypeOf_(s) : apply TypeOf-weakening-_(s) to TypeOf_(s) with env=p.newEnv, env=p.newEnv. endfor
 							else 
 						 		 _ : case Prem_(p).
-								 TypeOfForPrem_(p) : apply TypeOf-weakening-_(p.state) to TypeOf_(p.inputState) TypeOfVar_(p.inserted) with l=p.newLabel..
+								 TypeOfForPrem_(p) : apply TypeOf-extend-prelim-_(p.state) to TypeOf_(p.inputState) TypeOfVar_(p.inserted) with l=p.newLabel..
 								 TypeOf_(p.output) : apply TypeOf-extend_(p.state) to Prem_(p) TypeOfForPrem_(p).
-								 for each s in p.state.otherStates : TypeOf_(s) : apply Irrelevance-TypeOf-with-ExtensionsOfEnv-_(s) to TypeOf_(s) TypeOfVar_(p.inserted) with l=p.newLabel, l=p.newLabel. endfor
+								 for each s in p.state.otherStates : TypeOf_(s) : apply TypeOf-weakening-for-extns-_(s) to TypeOf_(s) TypeOfVar_(p.inserted) with l=p.newLabel, l=p.newLabel. endfor
 							endif
 					endif
 				endfor.
@@ -51,7 +51,7 @@ for each e in Expression:
 
 				if containsSubstitution(r.conclusion.targetExp) then skip else backchain on Type-state-envs-weakening-_(states) endif. 
 				
-				for each s in states : backchain on TypeOf-irrelevanceOfEnv-_(s) endfor 				
+				for each s in states : backchain on TypeOf-weakening-_(s) endfor 				
 	endfor.  
 	for each i in contextualArgs(e): 
 		MapEnvSubset0 : apply IH0 to Typing_(i) TypeOf_(states) Prem_(0).

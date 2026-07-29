@@ -146,7 +146,7 @@ Theorem TypeOf-updateH:
 	  apply lookup_when_inequal_labels-H to Landl Update LookupMap.
 	  search.
 
-Theorem TypeOf-weakening-H: 
+Theorem TypeOf-extend-prelim-H: 
     forall envH map E T l,
       typeOfH envH map ->
       {typeOf nilEnvT envH E T} ->
@@ -171,7 +171,7 @@ Theorem TypeOf-extendH : forall map E map' L T env ,
   search.
 
 
-Theorem TypeOf-irrelevanceOfEnv-H: forall EnvH, forall map, typeOfH EnvH map -> typeOfH EnvH map. 
+Theorem TypeOf-weakening-H: forall EnvH, forall map, typeOfH EnvH map -> typeOfH EnvH map. 
 intros Main.  
  search. 
 
@@ -189,7 +189,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  split.  
  search.  
  skip.  
- backchain TypeOf-irrelevanceOfEnv-H.  
+ backchain TypeOf-weakening-H.  
  MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
  witness EnvH'.  
  split.  
@@ -211,14 +211,14 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  TypeOfVarV: apply Typing0. 
  TypeOfVarLNewH : assert {typeOf (nilEnvT) (consEnvH LNewH T EnvH) (labelH LNewH) (refH T)}.  
  case Prem0(keep).  
- TypeOfForPrem0: apply TypeOf-weakening-H to TypeOfH TypeOfVarV with l = LNewH.  
+ TypeOfForPrem0: apply TypeOf-extend-prelim-H to TypeOfH TypeOfVarV with l = LNewH.  
  TypeOfH': apply TypeOf-extendH to Prem0 TypeOfForPrem0.  
   
  witness (consEnvH LNewH T EnvH).  
  split.  
  search.  
  backchain Type-state-envs-weakening-H.  
- backchain TypeOf-irrelevanceOfEnv-H.  
+ backchain TypeOf-weakening-H.  
  MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
  witness EnvH'.  
  split.  
@@ -234,7 +234,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  split.  
  search.  
  backchain Type-state-envs-weakening-H.  
- backchain TypeOf-irrelevanceOfEnv-H.  
+ backchain TypeOf-weakening-H.  
  MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
  witness EnvH'.  
  split.  
@@ -250,7 +250,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  split.  
  search.  
  backchain Type-state-envs-weakening-H.  
- backchain TypeOf-irrelevanceOfEnv-H.  
+ backchain TypeOf-weakening-H.  
  MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
  witness EnvH'.  
  split.  
@@ -276,18 +276,18 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  TypeOfVarLNewH1 : assert {typeOf (nilEnvT) (consEnvH LNewH1 T EnvH) (labelH LNewH1) (refH T)}.  
  TypeOfVarLNewH2 : assert {typeOf (nilEnvT) (consEnvH LNewH2 (refH T) (consEnvH LNewH1 T EnvH)) (labelH LNewH2) (refH (refH T))}.  
  case Prem0(keep).  
- TypeOfForPrem0: apply TypeOf-weakening-H to TypeOfH TypeOfVarV with l = LNewH1.  
+ TypeOfForPrem0: apply TypeOf-extend-prelim-H to TypeOfH TypeOfVarV with l = LNewH1.  
  TypeOfH': apply TypeOf-extendH to Prem0 TypeOfForPrem0.  
   
  case Prem1(keep).  
- TypeOfForPrem1: apply TypeOf-weakening-H to TypeOfH' TypeOfVarLNewH1 with l = LNewH2.  
+ TypeOfForPrem1: apply TypeOf-extend-prelim-H to TypeOfH' TypeOfVarLNewH1 with l = LNewH2.  
  TypeOfH'': apply TypeOf-extendH to Prem1 TypeOfForPrem1.  
   
  witness (consEnvH LNewH2 (refH T) (consEnvH LNewH1 T EnvH)).  
  split.  
  search.  
  backchain Type-state-envs-weakening-H.  
- backchain TypeOf-irrelevanceOfEnv-H.  
+ backchain TypeOf-weakening-H.  
  MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
  witness EnvH'.  
  split.  
@@ -305,7 +305,7 @@ IH0 : induction on 1. intros Main TypeOfH Step. Typing0: case Main.
  split.  
  search.  
  backchain Type-state-envs-weakening-H.  
- backchain TypeOf-irrelevanceOfEnv-H.  
+ backchain TypeOf-weakening-H.  
  MapEnvSubset0: apply IH0 to Typing0 TypeOfH  Prem0.  
  witness EnvH'.  
  split.  

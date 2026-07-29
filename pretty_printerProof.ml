@@ -258,7 +258,7 @@ let labels_remain_in_extended (m : string) : string  =
 
 
 let typeOf_weakening (ms : string list) (m : string) : string  = 
-  "Theorem TypeOf-weakening-" ^ m ^ ": 
+  "Theorem TypeOf-extend-prelim-" ^ m ^ ": 
     forall " ^ (String.concat " " (getEnvMetaVars ms)) ^ " map E T l,
       typeOf" ^ m ^ " " ^ (String.concat " " (getEnvMetaVars ms)) ^ " map ->
       {typeOf nilEnvT " ^ (String.concat " " (getEnvMetaVars ms)) ^ " E T} ->
@@ -308,7 +308,7 @@ let irrelevant_typeof_extensionEnv lan (m : string) : string =
 	let (Var otherstate) = var_trim_numbers (Var otherstateWithIndex) in 
 
 (* it used to be  	typeOfR (consEnvH (succLabelH l) T EnvH) EnvR R.  when you were passing L rather than LNewH *)	
-	" Theorem Irrelevance-TypeOf-with-ExtensionsOfEnv-" ^ m ^ ": 
+	" Theorem TypeOf-weakening-for-extns-" ^ m ^ ": 
  	forall EnvH EnvR l T R E,
  	typeOfR EnvH EnvR R ->
 	{typeOf nilEnvT EnvH EnvR E T} -> 
