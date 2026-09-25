@@ -96,5 +96,7 @@ type  i6 finiteInteger.
 
 type addition term -> term -> term -> o.
 type multiplication term -> term -> term -> o.
+type sub register -> register -> term -> term -> term.
+type subtraction term -> term -> term -> o.
 type equality term -> term -> term -> o.
 type inequality term -> term -> term -> o.

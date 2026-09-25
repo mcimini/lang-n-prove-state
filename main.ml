@@ -86,7 +86,7 @@ let typeSoundnessState = [
 ; *)
 "typeOf-weakening.lnp"
 ; 
-"typeOf-weakening.lnp_trivial.lnp"
+"typeOf-weakening_trivial.lnp"
 ; 
 "preservation-state.lnp" 
 ]
@@ -201,10 +201,20 @@ let applyAllSchemasToOneLanguages_to_file filenameLan =
     close_out mod_file;
 		*)
     print_endline ("Proofs generated in ./generated/" ^ nameOfLanguage ^ ".thm");;
+
+let print_op_for_abella (f : int -> int -> int) op = 
+							let aux2 i1 i2 = 
+								let sum = 
+									if (f i1 i2) > 6 then 6 else if (f i1 i2) <= 0 then 0 else (f i1 i2)
+								in let i1s = "(num i" ^ string_of_int i1 ^ ")" in let i2s = "(num i" ^ string_of_int i2 ^ ")" in let sums = "(num i" ^ string_of_int sum ^ ")" in 
+								print_string (op ^ i1s ^ " "  ^ i2s ^ " " ^ sums ^ ".\n")   in 
+							let aux1 i = List.map (aux2 i) [0;1;2;3;4;5;6] in 
+							 List.map aux1 [0;1;2;3;4;5;6]
 	
 let () = List.hd (List.map applyAllSchemasToOneLanguages_to_file languagesFromRepo);;
 
-(*	if you need command line args, here is an example. 
+(*	List.hd (List.map applyAllSchemasToOneLanguages_to_file languagesFromRepo);;
+if you need command line args, here is an example. 
 
 let () = match Array.to_list Sys.argv with 
 		| [oneArg] -> print_endline ("Command line error: Lang-SQL needs the name of a folder, example: ./lnsql example_queries");

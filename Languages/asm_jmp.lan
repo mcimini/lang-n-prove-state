@@ -1,7 +1,7 @@
 State { Heap H, RegisterFile R with key = Z (strong updates) }
 Register Z ::= (r1) | (r2) | (r3) | (r4) | (r5) | (r6) 
 Type T ::= (int) | (refH T) | (unitT) | (codeT NvrR)
-Expression E ::= x | (num I) | (halt) | (add Z Z E E) | (mult Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (jmp E) | (code NvrR E) | (labelH L) 
+Expression E ::= x | (num I) | (halt) | (add Z Z E E) | (mult Z Z E E) | (sub Z Z E E) | (load Z Z E) | (malloc Z E E) | (move Z E E) | (store Z Z E) | (jmp E) | (code NvrR E) | (labelH L) 
 Value V ::= (num I) | (labelH L) 
 FiniteIntegers I ::= (i0) | (i1) | (i2) | (i3) | (i4) | (i5) | (i6) 
 Relation R ::= (step E H R E H R)
@@ -12,6 +12,7 @@ Gamma ; EnvH ; EnvR |- (num I) : (int).
 Gamma ; EnvH ; EnvR |- (halt) : (unitT). 
 Gamma ; EnvH ; EnvR |- (add Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
 Gamma ; EnvH ; EnvR |- (mult Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
+Gamma ; EnvH ; EnvR |- (sub Zd Zs E1 E2) : (unitT) <== (int) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : (int) /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->(int)].
 Gamma ; EnvH ; EnvR |- (load Zd Zs E) : (unitT) <== (refH T) <- EnvR(Zs) /\ T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR' |- E : (unitT) /\ EnvR' <- EnvR[Zd|->T].
 Gamma ; EnvH ; EnvR |- (malloc Zd E1 E2) : (unitT) <== T <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : T /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->T].
 Gamma ; EnvH ; EnvR |- (move Zd E1 E2) : (unitT) <== T' <- EnvR(Zd) /\ Gamma ; EnvH ; EnvR |- E1 : T /\ Gamma ; EnvH ; EnvR' |- E2 : (unitT) /\ EnvR' <- EnvR[Zd|->T].
@@ -29,6 +30,11 @@ Gamma ; EnvH ; EnvR |- (labelH L) : (refH T) <== T <- EnvH(L).
 (mult Zd Zs V1 E); H ; R --> E; H ; R' <== 
 	V2 <- R(Zs) /\
 	user-defined (multiplication V1 V2 V3) /\
+	R' <- R[Zd|->V3].
+
+(sub Zd Zs V1 E); H ; R --> E; H ; R' <== 
+	V2 <- R(Zs) /\
+	user-defined (subtraction V1 V2 V3) /\
 	R' <- R[Zd|->V3].
 
 (load Zd Zs E); H ; R --> E; H ; R' <== 

@@ -64,6 +64,7 @@ type halt term.
 type labelH labelH -> term.
 type add register -> register -> term -> term -> term.
 type mult register -> register -> term -> term -> term.
+type sub register -> register -> term -> term -> term.
 type load register -> register -> term -> term.
 type malloc register -> term -> term -> term.
 type move register -> term -> term -> term.
@@ -95,5 +96,6 @@ type  i6 finiteInteger.
 
 type addition term -> term -> term -> o.
 type multiplication term -> term -> term -> o.
+type subtraction term -> term -> term -> o.
 type equality term -> term -> term -> o.
 type inequality term -> term -> term -> o.
